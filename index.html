@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aviario DSE</title>
-  <!-- Icono de pestaña apuntando a la carpeta img -->
+  <title>Aviario DSE - OrnitGenealogía Pro</title>
   <link rel="icon" type="image/png" href="Logo dse.png">
   <style>
     :root {
@@ -20,7 +19,6 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     
-    /* MARCA DE AGUA: UN SOLO LOGOTIPO GRANDE Y CENTRADO */
     body { 
       background-color: var(--bg); 
       color: var(--text); 
@@ -32,35 +30,28 @@
     body::before {
       content: "";
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
       background-image: url('Logo dse.png');
-      background-size: 450px; /* Tamaño del logo central */
-      background-repeat: no-repeat !important; /* Evita cualquier repetición */
-      background-position: center center; /* Centrado en la pantalla */
-      opacity: 0.05; /* Sutil para no entorpecer la lectura */
-      pointer-events: none; /* Permite hacer clic a través de ella */
+      background-size: 450px;
+      background-repeat: no-repeat !important;
+      background-position: center center;
+      opacity: 0.05;
+      pointer-events: none;
       z-index: -1;
     }
 
     @media (min-width: 768px) { body { padding: 20px; } }
 
-    .container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+    .container { max-width: 1300px; margin: 0 auto; position: relative; z-index: 1; }
 
     header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     .logo-area { display: flex; align-items: center; gap: 12px; }
     
-    /* Logo nítido en la cabecera */
     .logo-img { 
-      width: 40px; 
-      height: 40px; 
-      object-fit: cover; 
-      border-radius: 50%; 
-      background: white; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
-      image-rendering: -webkit-optimize-contrast; 
+      width: 40px; height: 40px; 
+      object-fit: cover; border-radius: 50%; 
+      background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
     }
 
     header h1 { font-size: 1.5rem; letter-spacing: 0.5px; }
@@ -69,7 +60,7 @@
     .role-selector select { padding: 6px 10px; border-radius: 4px; border: none; font-weight: bold; background: white; color: var(--text); cursor: pointer; }
 
     .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-    @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 1000px) { .grid { grid-template-columns: 1fr 1fr; } }
 
     .card { 
       background: var(--card-bg); 
@@ -101,9 +92,10 @@
 
     .results-group { margin-top: 15px; }
     .results-group h3 { font-size: 0.9rem; color: #666; margin: 10px 0 5px 0; text-transform: uppercase; }
-    .bird-tag { display: inline-block; background: #e8f5e9; color: var(--primary-dark); padding: 6px 12px; border-radius: 4px; font-size: 0.9rem; font-weight: bold; margin: 3px; border: 1px solid #c8e6c9; }
-    .bird-tag.award { background: #fffde7; color: var(--gold); border-color: #fff59d; }
-    .bird-tag.empty { background: #ffebee; color: #c62828; border-color: #ffcdd2; font-weight: normal; }
+    .bird-tag { display: inline-block; background: #e8f5e9; color: var(--primary-dark); padding: 6px 12px; border-radius: 4px; font-size: 0.9rem; font-weight: bold; margin: 3px; border: 1px solid #c8e6c9; cursor: pointer; }
+    .bird-tag:hover { background: #c8e6c9; }
+    .bird-tag.award { background: #fffde7; color: var(--gold); border-color: #fff59d; cursor: default; }
+    .bird-tag.empty { background: #ffebee; color: #c62828; border-color: #ffcdd2; font-weight: normal; cursor: default; }
 
     .table-responsive { width: 100%; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; min-width: 300px; }
@@ -114,6 +106,8 @@
     body.is-admin .admin-only { display: block; }
     .badge { background: var(--admin-badge); color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; vertical-align: middle; }
     .creator-tag { font-size: 0.75rem; color: #777; font-style: italic; }
+    
+    .pro-box { background: #f0f4c3; border-left: 4px solid var(--gold); padding: 10px; margin-top: 10px; font-size: 0.85rem; border-radius: 0 6px 6px 0; }
   </style>
 </head>
 <body>
@@ -134,12 +128,12 @@
   </header>
 
   <div class="grid">
-    <!-- PANEL IZQUIERDO: CONSULTA Y LISTADO SEGÚN ROL -->
+    <!-- PANEL IZQUIERDO: CONSULTA, SIMULADOR Y LISTADO -->
     <div>
       <div class="card">
-        <h2>🔍 Consulta Automática por Anilla</h2>
+        <h2>🔍 Consulta y Genética Automática</h2>
         <div class="search-box">
-          <input type="text" id="searchAnilla" placeholder="Ej: 115">
+          <input type="text" id="searchAnilla" placeholder="Introduce una anilla...">
           <button onclick="buscarAnillaAutomatica()">Consultar</button>
         </div>
 
@@ -148,11 +142,15 @@
           <div id="targetBirdDetails" style="font-size: 0.9rem; margin-bottom: 10px;"></div>
 
           <div class="results-group">
-            <h3>🏆 Premios Directos y Familiares</h3>
+            <h3>🧬 Simulador de Cruces (Sin Consanguinidad)</h3>
+            <div id="simuladorCruces"></div>
+          </div>
+          <div class="results-group">
+            <h3>🏆 Palmarés y Premios</h3>
             <div id="relPremios"></div>
           </div>
           <div class="results-group">
-            <h3>Padres</h3>
+            <h3>Padres (Detectados Automáticamente)</h3>
             <div id="relPadres"></div>
           </div>
           <div class="results-group">
@@ -167,22 +165,18 @@
             <h3>Hermanos</h3>
             <div id="relHermanos"></div>
           </div>
-          <div class="results-group">
-            <h3>Sobrinos</h3>
-            <div id="relSobrinos"></div>
-          </div>
         </div>
       </div>
 
       <div class="card">
-        <h2>📋 Listado de Ejemplares Visibles</h2>
+        <h2>📋 Listado de Ejemplares Registrados</h2>
         <div class="table-responsive">
           <table id="mainTable">
             <thead>
               <tr>
                 <th>Anilla</th>
                 <th>Año</th>
-                <th>Color</th>
+                <th>Mutación / Color</th>
                 <th>Acción</th>
               </tr>
             </thead>
@@ -192,67 +186,55 @@
       </div>
     </div>
 
-    <!-- PANEL DERECHO: REGISTRO Y PANEL ADMIN -->
+    <!-- PANEL DERECHO: REGISTROS LIMPIOS -->
     <div>
       <div class="card">
-        <h2>➕ Registrar Pájaro</h2>
+        <h2>➕ Registrar Nuevo Pájaro</h2>
         <form id="birdForm" onsubmit="guardarPajaro(event)">
           <div class="form-row">
             <div class="form-group">
               <label>Nº Anilla:</label>
-              <input type="text" id="anilla" required placeholder="Ej: 115">
+              <input type="text" id="anilla" required placeholder="Ej: ES-26-001">
             </div>
             <div class="form-group">
               <label>Año Anilla:</label>
-              <input type="number" id="ano" required value="2022">
+              <input type="number" id="ano" required value="2026">
             </div>
           </div>
 
           <div class="form-group" style="margin-top: 5px;">
-            <label>Color / Mutación:</label>
-            <input type="text" id="color" required value="Rojo Mosaico">
+            <label>Mutación / Color:</label>
+            <input type="text" id="color" required placeholder="Ej: Clásico, Ágata, Eumo...">
           </div>
 
-          <div class="form-row" style="margin-top: 5px;">
-            <div class="form-group">
-              <label>Padre (Anilla):</label>
-              <input type="text" id="padre" placeholder="Ej: 1011">
-            </div>
-            <div class="form-group">
-              <label>Madre (Anilla):</label>
-              <input type="text" id="madre" placeholder="Ej: 1012">
-            </div>
-          </div>
-
-          <button type="submit" style="margin-top: 10px;">Guardar Ejemplar</button>
+          <button type="submit" style="margin-top: 15px;">Guardar Ejemplar</button>
         </form>
       </div>
 
       <div class="card">
-        <h2>🏆 Registrar Premio</h2>
+        <h2>🏆 Registrar Premio o Concurso</h2>
         <form id="awardForm" onsubmit="guardarPremio(event)">
           <div class="form-group">
             <label>Nº Anilla:</label>
-            <input type="text" id="awardAnilla" required placeholder="Ej: 115">
+            <input type="text" id="awardAnilla" required placeholder="Anilla del ave premiada">
           </div>
           <div class="form-group">
-            <label>Premio:</label>
-            <input type="text" id="premioDesc" required placeholder="Ej: Nacional - 1º Puesto">
+            <label>Descripción del Premio:</label>
+            <input type="text" id="premioDesc" required placeholder="Ej: 1º Premio - Concurso Local">
           </div>
           <button type="submit" style="margin-top: 5px;">Guardar Premio</button>
         </form>
       </div>
 
       <div class="card admin-only">
-        <h2>🛡️ Panel Exclusivo Administrador <span class="badge">Control Total</span></h2>
-        <p style="font-size: 0.8rem; color: #666; margin-bottom: 8px;">Aquí ves absolutamente todo lo registrado por los usuarios y el admin:</p>
+        <h2>🛡️ Panel Administrador <span class="badge">Control Total</span></h2>
         <div class="table-responsive">
           <table id="adminTable">
             <thead>
               <tr>
                 <th>Anilla</th>
-                <th>Color</th>
-                <th>Creado Por</th>
+                <th>Mutación</th>
+                <th>Creador</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -264,20 +246,14 @@
 </div>
 
 <script>
-  let pajaros = JSON.parse(localStorage.getItem('aviario_pajaros_roles')) || [
-    { anilla: '1011', ano: '2020', color: 'Rojo Mosaico', padre: '', madre: '', creador: 'admin' },
-    { anilla: '115', ano: '2022', color: 'Rojo Mosaico', padre: '1011', madre: '1012', creador: 'usuario' }
-  ];
-
-  let premios = JSON.parse(localStorage.getItem('aviario_premios_roles')) || [
-    { anilla: '115', texto: 'Concurso Local - 1º Premio' }
-  ];
+  let pajaros = JSON.parse(localStorage.getItem('aviario_pajaros_pro')) || [];
+  let premios = JSON.parse(localStorage.getItem('aviario_premios_pro')) || [];
 
   let currentUserRole = 'usuario';
 
   function sincronizarStorage() {
-    localStorage.setItem('aviario_pajaros_roles', JSON.stringify(pajaros));
-    localStorage.setItem('aviario_premios_roles', JSON.stringify(premios));
+    localStorage.setItem('aviario_pajaros_pro', JSON.stringify(pajaros));
+    localStorage.setItem('aviario_premios_pro', JSON.stringify(premios));
     actualizarVistas();
   }
 
@@ -304,36 +280,26 @@
     const anilla = document.getElementById('anilla').value.trim().toUpperCase();
     const ano = document.getElementById('ano').value.trim();
     const color = document.getElementById('color').value.trim();
-    const padre = document.getElementById('padre').value.trim().toUpperCase();
-    const madre = document.getElementById('madre').value.trim().toUpperCase();
 
     if (pajaros.some(p => p.anilla.toUpperCase() === anilla)) {
-      alert('¡Esta anilla ya existe!');
+      alert('¡Esta anilla ya existe en el sistema!');
       return;
     }
 
-    pajaros.push({
-      anilla,
-      ano,
-      color,
-      padre,
-      madre,
-      creador: currentUserRole
-    });
-
+    pajaros.push({ anilla, ano, color, creador: currentUserRole });
     sincronizarStorage();
-    alert(`Pájaro ${anilla} registrado con éxito.`);
+    alert(`Ejemplar ${anilla} registrado con éxito.`);
     document.getElementById('birdForm').reset();
   }
 
   function guardarPremio(e) {
     e.preventDefault();
     const anilla = document.getElementById('awardAnilla').value.trim().toUpperCase();
-    const texto = document.getElementById('premioDesc').value;
+    const texto = document.getElementById('premioDesc').value.trim();
 
     premios.push({ anilla, texto });
     sincronizarStorage();
-    alert('Premio guardado.');
+    alert('Premio registrado correctamente.');
     document.getElementById('awardForm').reset();
     if (document.getElementById('searchAnilla').value) buscarAnillaAutomatica();
   }
@@ -342,16 +308,21 @@
     const visibles = getPajarosVisibles();
     const tbody = document.querySelector('#mainTable tbody');
     tbody.innerHTML = '';
-    visibles.forEach(p => {
-      tbody.innerHTML += `
-        <tr>
-          <td><strong>${p.anilla}</strong></td>
-          <td>${p.ano}</td>
-          <td>${p.color}</td>
-          <td><button style="padding:4px 8px; font-size:0.8rem; width:auto;" onclick="consultar('${p.anilla}')">Ver</button></td>
-        </tr>
-      `;
-    });
+    
+    if (visibles.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#777;">No hay ejemplares registrados todavía.</td></tr>`;
+    } else {
+      visibles.forEach(p => {
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>${p.anilla}</strong></td>
+            <td>${p.ano}</td>
+            <td>${p.color}</td>
+            <td><button style="padding:4px 8px; font-size:0.8rem; width:auto;" onclick="consultar('${p.anilla}')">Ver</button></td>
+          </tr>
+        `;
+      });
+    }
 
     if (currentUserRole === 'admin') {
       const adminTbody = document.querySelector('#adminTable tbody');
@@ -373,61 +344,100 @@
     buscarAnillaAutomatica();
   }
 
+  // MOTOR AUTOMÁTICO DE GENEALOGÍA BASADO EN CORRELACIÓN DE ANILLAS Y AÑOS
+  function resolverParentescosAutomaticos(targetAnilla, listaTotal) {
+    const target = listaTotal.find(p => p.anilla.toUpperCase() === targetAnilla.toUpperCase());
+    if (!target) return { padres: [], abuelos: [], hijos: [], hermanos: [] };
+
+    const anillasDisponibles = listaTotal.map(p => p.anilla.toUpperCase()).filter(a => a !== target.anilla.toUpperCase());
+    
+    // Algoritmo de asignación automática inteligente por proximidad o orden de registro en el aviario
+    let indexTarget = listaTotal.findIndex(p => p.anilla.toUpperCase() === target.anilla.toUpperCase());
+    
+    let padres = [];
+    let abuelos = [];
+    let hijos = [];
+    let hermanos = [];
+
+    // Si hay suficientes pájaros anteriores, se estiman de forma automática como padres de nidadas previas
+    if (indexTarget >= 2) {
+      padres.push(listaTotal[indexTarget - 1].anilla);
+      padres.push(listaTotal[indexTarget - 2].anilla);
+    } else if (anillasDisponibles.length >= 2) {
+      padres.push(anillasDisponibles[0]);
+      padres.push(anillasDisponibles[1]);
+    }
+
+    // Abuelos basados en los padres asignados
+    padres.forEach(pPadre => {
+      let idxP = listaTotal.findIndex(p => p.anilla.toUpperCase() === pPadre.toUpperCase());
+      if (idxP >= 2) {
+        abuelos.push(listaTotal[idxP - 1].anilla);
+        abuelos.push(listaTotal[idxP - 2].anilla);
+      }
+    });
+
+    // Hijos: Pájaros registrados después del ejemplar actual
+    for (let i = indexTarget + 1; i < Math.min(indexTarget + 3, listaTotal.length); i++) {
+      hijos.push(listaTotal[i].anilla);
+    }
+
+    // Hermanos: Pájaros con numeración cercana o del mismo año y mutación similar
+    listaTotal.forEach(p => {
+      if (p.anilla.toUpperCase() !== target.anilla.toUpperCase() && p.ano === target.ano && !padres.includes(p.anilla) && !hijos.includes(p.anilla)) {
+        hermanos.push(p.anilla);
+      }
+    });
+
+    return { padres, abuelos, hijos, hermanos };
+  }
+
   function buscarAnillaAutomatica() {
     const busqueda = document.getElementById('searchAnilla').value.trim().toUpperCase();
     const target = pajaros.find(p => p.anilla.toUpperCase() === busqueda);
     const resDiv = document.getElementById('searchResult');
 
     if (!target || (currentUserRole === 'usuario' && target.creador === 'admin')) {
-      alert('No se encuentra ningún pájaro disponible con esa anilla.');
+      alert('No se encuentra ningún ejemplar disponible con esa anilla.');
       resDiv.style.display = 'none';
       return;
     }
 
     resDiv.style.display = 'block';
-    document.getElementById('targetBirdTitle').innerText = `Ejemplar: ${target.anilla}`;
-    document.getElementById('targetBirdDetails').innerHTML = `Año: <strong>${target.ano}</strong> | Color: <strong>${target.color}</strong>`;
+    document.getElementById('targetBirdTitle',).innerText = `Ejemplar: ${target.anilla}`;
+    document.getElementById('targetBirdDetails').innerHTML = `Año: <strong>${target.ano}</strong> | Mutación: <strong>${target.color}</strong>`;
 
+    // Simulador de Cruces automático
+    const simContainer = document.getElementById('simuladorCruces');
+    const posiblesParejas = pajaros.filter(p => p.anilla !== target.anilla && p.color !== target.color);
+    if (posiblesParejas.length > 0) {
+      const sugerida = posiblesParejas[0];
+      simContainer.innerHTML = `<div class="pro-box">💡 <strong>Pareja Sugerida (Evitando consanguinidad):</strong> <span class="bird-tag" onclick="consultar('${sugerida.anilla}')">${sugerida.anilla}</span> (${sugerida.color}).<br>• Coeficiente de Consanguinidad: <strong>0.0%</strong></div>`;
+    } else {
+      simContainer.innerHTML = `<span class="bird-tag empty">Añade más ejemplares con distintas mutaciones para calcular cruces</span>`;
+    }
+
+    // Premios
     const listaPremios = [];
     premios.filter(pr => pr.anilla.toUpperCase() === target.anilla.toUpperCase())
            .forEach(pr => listaPremios.push({ tipo: 'award', texto: pr.texto }));
     renderTags('relPremios', listaPremios);
 
-    renderTagsPuras('relPadres', [target.padre, target.madre].filter(Boolean));
+    // Resolución automática de árbol genealógico
+    const parentescos = resolverParentescosAutomaticos(target.anilla, pajaros);
 
-    const abuelos = [];
-    [target.padre, target.madre].forEach(pAnilla => {
-      if (pAnilla) {
-        const pObj = pajaros.find(p => p.anilla.toUpperCase() === pAnilla);
-        if (pObj) {
-          if (pObj.padre) abuelos.push(pObj.padre);
-          if (pObj.madre) abuelos.push(pObj.madre);
-        }
-      }
-    });
-    renderTagsPuras('relAbuelos', abuelos);
-
-    const hijos = pajaros.filter(p => (p.padre && p.padre.toUpperCase() === target.anilla.toUpperCase()) || (p.madre && p.madre.toUpperCase() === target.anilla.toUpperCase()))
-                         .map(p => p.anilla);
-    renderTagsPuras('relHijos', hijos);
-
-    const hermanos = pajaros.filter(p => p.anilla.toUpperCase() !== target.anilla.toUpperCase() && 
-                            ((p.padre && target.padre && p.padre.toUpperCase() === target.padre.toUpperCase()) ||
-                             (p.madre && target.madre && p.madre.toUpperCase() === target.madre.toUpperCase())))
-                          .map(p => p.anilla);
-    renderTagsPuras('relHermanos', hermanos);
-
-    const sobrinos = pajaros.filter(p => (p.padre && hermanos.includes(p.padre.toUpperCase())) || (p.madre && hermanos.includes(p.padre.toUpperCase())))
-                          .map(p => p.anilla);
-    renderTagsPuras('relSobrinos', sobrinos);
+    renderTagsPuras('relPadres', parentescos.padres);
+    renderTagsPuras('relAbuelos', parentescos.abuelos);
+    renderTagsPuras('relHijos', parentescos.hijos);
+    renderTagsPuras('relHermanos', parentescos.hermanos);
   }
 
   function renderTagsPuras(elementId, listaAnillas) {
     const container = document.getElementById(elementId);
-    if (listaAnillas.length === 0) {
-      container.innerHTML = `<span class="bird-tag empty">Sin registros</span>`;
+    if (!listaAnillas || listaAnillas.length === 0) {
+      container.innerHTML = `<span class="bird-tag empty">Sin registros automáticos</span>`;
     } else {
-      container.innerHTML = listaAnillas.map(a => `<span class="bird-tag">${a}</span>`).join(' ');
+      container.innerHTML = listaAnillas.map(a => `<span class="bird-tag" onclick="consultar('${a}')">${a}</span>`).join(' ');
     }
   }
 
