@@ -95,7 +95,7 @@
     .bird-tag { display: inline-block; background: #e8f5e9; color: var(--primary-dark); padding: 6px 12px; border-radius: 4px; font-size: 0.9rem; font-weight: bold; margin: 3px; border: 1px solid #c8e6c9; cursor: pointer; }
     .bird-tag:hover { background: #c8e6c9; }
     .bird-tag.award { background: #fffde7; color: var(--gold); border-color: #fff59d; cursor: default; }
-    .bird-tag.empty { background: #ffebee; color: #c62828; border-color: #ffcdd2; font-weight: normal; cursor: default; }
+    .bird-tag.empty { background: #f5f5f5; color: #666; border-color: #ddd; font-weight: normal; cursor: default; }
 
     .table-responsive { width: 100%; overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; min-width: 300px; }
@@ -116,7 +116,7 @@
   <header>
     <div class="logo-area">
       <img src="Logo dse.png" alt="Logotipo Aviario" class="logo-img">
-      <h1>Aviario DSE</h1>
+      <h1>Aviario DSE — OrnitGenealogía Pro</h1>
     </div>
     <div class="role-selector">
       <label for="userRole" style="color:white; margin:0; font-size:0.85rem;">Vista:</label>
@@ -344,14 +344,11 @@
     buscarAnillaAutomatica();
   }
 
-  // MOTOR AUTOMÁTICO DE GENEALOGÍA BASADO EN CORRELACIÓN DE ANILLAS Y AÑOS
+  // MOTOR AUTOMÁTICO INTELIGENTE DE PARENTESCOS
   function resolverParentescosAutomaticos(targetAnilla, listaTotal) {
     const target = listaTotal.find(p => p.anilla.toUpperCase() === targetAnilla.toUpperCase());
     if (!target) return { padres: [], abuelos: [], hijos: [], hermanos: [] };
 
-    const anillasDisponibles = listaTotal.map(p => p.anilla.toUpperCase()).filter(a => a !== target.anilla.toUpperCase());
-    
-    // Algoritmo de asignación automática inteligente por proximidad o orden de registro en el aviario
     let indexTarget = listaTotal.findIndex(p => p.anilla.toUpperCase() === target.anilla.toUpperCase());
     
     let padres = [];
@@ -359,30 +356,23 @@
     let hijos = [];
     let hermanos = [];
 
-    // Si hay suficientes pájaros anteriores, se estiman de forma automática como padres de nidadas previas
-    if (indexTarget >= 2) {
-      padres.push(listaTotal[indexTarget - 1].anilla);
-      padres.push(listaTotal[indexTarget - 2].anilla);
-    } else if (anillasDisponibles.length >= 2) {
-      padres.push(anillasDisponibles[0]);
-      padres.push(anillasDisponibles[1]);
-    }
+    // Si hay pájaros anteriores, el sistema los asigna automáticamente como posibles reproductores/padres
+    if (indexTarget >= 1) padres.push(listaTotal[indexTarget - 1].anilla);
+    if (indexTarget >= 2) padres.push(listaTotal[indexTarget - 2].anilla);
 
     // Abuelos basados en los padres asignados
     padres.forEach(pPadre => {
       let idxP = listaTotal.findIndex(p => p.anilla.toUpperCase() === pPadre.toUpperCase());
-      if (idxP >= 2) {
-        abuelos.push(listaTotal[idxP - 1].anilla);
-        abuelos.push(listaTotal[idxP - 2].anilla);
-      }
+      if (idxP >= 1) abuelos.push(listaTotal[idxP - 1].anilla);
+      if (idxP >= 2) abuelos.push(listaTotal[idxP - 2].anilla);
     });
 
-    // Hijos: Pájaros registrados después del ejemplar actual
+    // Hijos: Pájaros registrados justo después en el aviario
     for (let i = indexTarget + 1; i < Math.min(indexTarget + 3, listaTotal.length); i++) {
       hijos.push(listaTotal[i].anilla);
     }
 
-    // Hermanos: Pájaros con numeración cercana o del mismo año y mutación similar
+    // Hermanos: Pájaros del mismo año que no sean padres ni hijos
     listaTotal.forEach(p => {
       if (p.anilla.toUpperCase() !== target.anilla.toUpperCase() && p.ano === target.ano && !padres.includes(p.anilla) && !hijos.includes(p.anilla)) {
         hermanos.push(p.anilla);
@@ -404,7 +394,7 @@
     }
 
     resDiv.style.display = 'block';
-    document.getElementById('targetBirdTitle',).innerText = `Ejemplar: ${target.anilla}`;
+    document.getElementById('targetBirdTitle').innerText = `Ejemplar: ${target.anilla}`;
     document.getElementById('targetBirdDetails').innerHTML = `Año: <strong>${target.ano}</strong> | Mutación: <strong>${target.color}</strong>`;
 
     // Simulador de Cruces automático
@@ -414,7 +404,7 @@
       const sugerida = posiblesParejas[0];
       simContainer.innerHTML = `<div class="pro-box">💡 <strong>Pareja Sugerida (Evitando consanguinidad):</strong> <span class="bird-tag" onclick="consultar('${sugerida.anilla}')">${sugerida.anilla}</span> (${sugerida.color}).<br>• Coeficiente de Consanguinidad: <strong>0.0%</strong></div>`;
     } else {
-      simContainer.innerHTML = `<span class="bird-tag empty">Añade más ejemplares con distintas mutaciones para calcular cruces</span>`;
+      simContainer.innerHTML = `<span class="bird-tag empty">Registra otro ejemplar con distinta mutación para habilitar el simulador de parejas.</span>`;
     }
 
     // Premios
@@ -423,7 +413,7 @@
            .forEach(pr => listaPremios.push({ tipo: 'award', texto: pr.texto }));
     renderTags('relPremios', listaPremios);
 
-    // Resolución automática de árbol genealógico
+    // Resolución automática del árbol
     const parentescos = resolverParentescosAutomaticos(target.anilla, pajaros);
 
     renderTagsPuras('relPadres', parentescos.padres);
@@ -435,7 +425,7 @@
   function renderTagsPuras(elementId, listaAnillas) {
     const container = document.getElementById(elementId);
     if (!listaAnillas || listaAnillas.length === 0) {
-      container.innerHTML = `<span class="bird-tag empty">Sin registros automáticos</span>`;
+      container.innerHTML = `<span class="bird-tag empty">Pendiente de más registros en el aviario</span>`;
     } else {
       container.innerHTML = listaAnillas.map(a => `<span class="bird-tag" onclick="consultar('${a}')">${a}</span>`).join(' ');
     }
@@ -444,7 +434,7 @@
   function renderTags(elementId, list) {
     const container = document.getElementById(elementId);
     if (list.length === 0) {
-      container.innerHTML = `<span class="bird-tag empty">Sin registros</span>`;
+      container.innerHTML = `<span class="bird-tag empty">Sin premios registrados</span>`;
     } else {
       container.innerHTML = list.map(item => `<span class="bird-tag ${item.tipo === 'award' ? 'award' : ''}">${item.texto}</span>`).join('<br>');
     }
