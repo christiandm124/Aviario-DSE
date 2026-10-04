@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aviario DSE</title>
+  <!-- Icono de pestaña apuntando a la carpeta img -->
+  <link rel="icon" type="image/png" href="img/Logo dse.png">
+  <style>
+    :root {
+      --primary: #2e7d32;
+      --primary-dark: #1b5e20;
+      --bg: #f4f6f8;
+      --card-bg: #ffffff;
+      --text: #333333;
+      --border: #dddddd;
+      --gold: #f57f17;
+      --admin-badge: #d32f2f;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    /* MARCA DE AGUA: UN SOLO LOGOTIPO GRANDE Y CENTRADO */
+    body { 
+      background-color: var(--bg); 
+      color: var(--text); 
+      padding: 10px; 
+      position: relative;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: url('img/Logo dse.png');
+      background-size: 450px; /* Tamaño del logo central */
+      background-repeat: no-repeat !important; /* Evita cualquier repetición */
+      background-position: center center; /* Centrado en la pantalla */
+      opacity: 0.05; /* Sutil para no entorpecer la lectura */
+      pointer-events: none; /* Permite hacer clic a través de ella */
+      z-index: -1;
+    }
+
+    @media (min-width: 768px) { body { padding: 20px; } }
+
+    .container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+
+    header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .logo-area { display: flex; align-items: center; gap: 12px; }
+    
+    /* Logo nítido en la cabecera */
+    .logo-img { 
+      width: 40px; 
+      height: 40px; 
+      object-fit: cover; 
+      border-radius: 50%; 
+      background: white; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
+      image-rendering: -webkit-optimize-contrast; 
+    }
+
+    header h1 { font-size: 1.5rem; letter-spacing: 0.5px; }
+
+    .role-selector { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 6px 12px; border-radius: 6px; }
+    .role-selector select { padding: 6px 10px; border-radius: 4px; border: none; font-weight: bold; background: white; color: var(--text); cursor: pointer; }
+
+    .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
+
+    .card { 
+      background: var(--card-bg); 
+      padding: 15px; 
+      border-radius: 8px; 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+      margin-bottom: 20px; 
+      overflow-x: auto; 
+    }
+    
+    @media (min-width: 768px) { .card { padding: 20px; } }
+
+    h2 { margin-bottom: 15px; color: var(--primary-dark); font-size: 1.1rem; border-bottom: 2px solid var(--primary); padding-bottom: 5px; }
+    @media (min-width: 768px) { h2 { font-size: 1.2rem; } }
+
+    form { display: flex; flex-direction: column; gap: 10px; }
+    .form-row { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 500px) { .form-row { grid-template-columns: 1fr 1fr; } }
+
+    .form-group { display: flex; flex-direction: column; }
+    label { font-size: 0.85rem; font-weight: bold; margin-bottom: 4px; color: #555; }
+    input, select, button { padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; width: 100%; }
+    button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+    button:hover { background: var(--primary-dark); }
+    
+    .search-box { display: flex; gap: 10px; flex-wrap: wrap; }
+    .search-box input { flex: 1; min-width: 150px; }
+    .search-box button { width: auto; min-width: 100px; }
+
+    .results-group { margin-top: 15px; }
+    .results-group h3 { font-size: 0.9rem; color: #666; margin: 10px 0 5px 0; text-transform: uppercase; }
+    .bird-tag { display: inline-block; background: #e8f5e9; color: var(--primary-dark); padding: 6px 12px; border-radius: 4px; font-size: 0.9rem; font-weight: bold; margin: 3px; border: 1px solid #c8e6c9; }
+    .bird-tag.award { background: #fffde7; color: var(--gold); border-color: #fff59d; }
+    .bird-tag.empty { background: #ffebee; color: #c62828; border-color: #ffcdd2; font-weight: normal; }
+
+    .table-responsive { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; min-width: 300px; }
+    th, td { border: 1px solid var(--border); padding: 8px; text-align: left; word-break: break-word; }
+    th { background: #e0e0e0; }
+
+    .admin-only { display: none; }
+    body.is-admin .admin-only { display: block; }
+    .badge { background: var(--admin-badge); color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; vertical-align: middle; }
+    .creator-tag { font-size: 0.75rem; color: #777; font-style: italic; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="logo-area">
+      <img src="img/Logo dse.png" alt="Logotipo Aviario" class="logo-img">
+      <h1>Aviario DSE</h1>
+    </div>
+    <div class="role-selector">
+      <label for="userRole" style="color:white; margin:0; font-size:0.85rem;">Vista:</label>
+      <select id="userRole" onchange="cambiarRol()">
+        <option value="usuario">Usuario Normal</option>
+        <option value="admin">Administrador</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- PANEL IZQUIERDO: CONSULTA Y LISTADO SEGÚN ROL -->
+    <div>
+      <div class="card">
+        <h2>🔍 Consulta Automática por Anilla</h2>
+        <div class="search-box">
+          <input type="text" id="searchAnilla" placeholder="Ej: 115">
+          <button onclick="buscarAnillaAutomatica()">Consultar</button>
+        </div>
+
+        <div id="searchResult" style="display:none; margin-top: 15px;">
+          <h2 id="targetBirdTitle" style="color: #1b5e20;"></h2>
+          <div id="targetBirdDetails" style="font-size: 0.9rem; margin-bottom: 10px;"></div>
+
+          <div class="results-group">
+            <h3>🏆 Premios Directos y Familiares</h3>
+            <div id="relPremios"></div>
+          </div>
+          <div class="results-group">
+            <h3>Padres</h3>
+            <div id="relPadres"></div>
+          </div>
+          <div class="results-group">
+            <h3>Abuelos</h3>
+            <div id="relAbuelos"></div>
+          </div>
+          <div class="results-group">
+            <h3>Hijos</h3>
+            <div id="relHijos"></div>
+          </div>
+          <div class="results-group">
+            <h3>Hermanos</h3>
+            <div id="relHermanos"></div>
+          </div>
+          <div class="results-group">
+            <h3>Sobrinos</h3>
+            <div id="relSobrinos"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📋 Listado de Ejemplares Visibles</h2>
+        <div class="table-responsive">
+          <table id="mainTable">
+            <thead>
+              <tr>
+                <th>Anilla</th>
+                <th>Año</th>
+                <th>Color</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL DERECHO: REGISTRO Y PANEL ADMIN -->
+    <div>
+      <div class="card">
+        <h2>➕ Registrar Pájaro</h2>
+        <form id="birdForm" onsubmit="guardarPajaro(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nº Anilla:</label>
+              <input type="text" id="anilla" required placeholder="Ej: 115">
+            </div>
+            <div class="form-group">
+              <label>Año Anilla:</label>
+              <input type="number" id="ano" required value="2022">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 5px;">
+            <label>Color / Mutación:</label>
+            <input type="text" id="color" required value="Rojo Mosaico">
+          </div>
+
+          <div class="form-row" style="margin-top: 5px;">
+            <div class="form-group">
+              <label>Padre (Anilla):</label>
+              <input type="text" id="padre" placeholder="Ej: 1011">
+            </div>
+            <div class="form-group">
+              <label>Madre (Anilla):</label>
+              <input type="text" id="madre" placeholder="Ej: 1012">
+            </div>
+          </div>
+
+          <button type="submit" style="margin-top: 10px;">Guardar Ejemplar</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>🏆 Registrar Premio</h2>
+        <form id="awardForm" onsubmit="guardarPremio(event)">
+          <div class="form-group">
+            <label>Nº Anilla:</label>
+            <input type="text" id="awardAnilla" required placeholder="Ej: 115">
+          </div>
+          <div class="form-group">
+            <label>Premio:</label>
+            <input type="text" id="premioDesc" required placeholder="Ej: Nacional - 1º Puesto">
+          </div>
+          <button type="submit" style="margin-top: 5px;">Guardar Premio</button>
+        </form>
+      </div>
+
+      <div class="card admin-only">
+        <h2>🛡️ Panel Exclusivo Administrador <span class="badge">Control Total</span></h2>
+        <p style="font-size: 0.8rem; color: #666; margin-bottom: 8px;">Aquí ves absolutamente todo lo registrado por los usuarios y el admin:</p>
+        <div class="table-responsive">
+          <table id="adminTable">
+            <thead>
+              <tr>
+                <th>Anilla</th>
+                <th>Color</th>
+                <th>Creado Por</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let pajaros = JSON.parse(localStorage.getItem('aviario_pajaros_roles')) || [
+    { anilla: '1011', ano: '2020', color: 'Rojo Mosaico', padre: '', madre: '', creador: 'admin' },
+    { anilla: '115', ano: '2022', color: 'Rojo Mosaico', padre: '1011', madre: '1012', creador: 'usuario' }
+  ];
+
+  let premios = JSON.parse(localStorage.getItem('aviario_premios_roles')) || [
+    { anilla: '115', texto: 'Concurso Local - 1º Premio' }
+  ];
+
+  let currentUserRole = 'usuario';
+
+  function sincronizarStorage() {
+    localStorage.setItem('aviario_pajaros_roles', JSON.stringify(pajaros));
+    localStorage.setItem('aviario_premios_roles', JSON.stringify(premios));
+    actualizarVistas();
+  }
+
+  function cambiarRol() {
+    currentUserRole = document.getElementById('userRole').value;
+    if (currentUserRole === 'admin') {
+      document.body.classList.add('is-admin');
+    } else {
+      document.body.classList.remove('is-admin');
+    }
+    actualizarVistas();
+  }
+
+  function getPajarosVisibles() {
+    if (currentUserRole === 'admin') {
+      return pajaros;
+    } else {
+      return pajaros.filter(p => p.creador !== 'admin');
+    }
+  }
+
+  function guardarPajaro(e) {
+    e.preventDefault();
+    const anilla = document.getElementById('anilla').value.trim().toUpperCase();
+    const ano = document.getElementById('ano').value.trim();
+    const color = document.getElementById('color').value.trim();
+    const padre = document.getElementById('padre').value.trim().toUpperCase();
+    const madre = document.getElementById('madre').value.trim().toUpperCase();
+
+    if (pajaros.some(p => p.anilla.toUpperCase() === anilla)) {
+      alert('¡Esta anilla ya existe!');
+      return;
+    }
+
+    pajaros.push({
+      anilla,
+      ano,
+      color,
+      padre,
+      madre,
+      creador: currentUserRole
+    });
+
+    sincronizarStorage();
+    alert(`Pájaro ${anilla} registrado con éxito.`);
+    document.getElementById('birdForm').reset();
+  }
+
+  function guardarPremio(e) {
+    e.preventDefault();
+    const anilla = document.getElementById('awardAnilla').value.trim().toUpperCase();
+    const texto = document.getElementById('premioDesc').value;
+
+    premios.push({ anilla, texto });
+    sincronizarStorage();
+    alert('Premio guardado.');
+    document.getElementById('awardForm').reset();
+    if (document.getElementById('searchAnilla').value) buscarAnillaAutomatica();
+  }
+
+  function actualizarVistas() {
+    const visibles = getPajarosVisibles();
+    const tbody = document.querySelector('#mainTable tbody');
+    tbody.innerHTML = '';
+    visibles.forEach(p => {
+      tbody.innerHTML += `
+        <tr>
+          <td><strong>${p.anilla}</strong></td>
+          <td>${p.ano}</td>
+          <td>${p.color}</td>
+          <td><button style="padding:4px 8px; font-size:0.8rem; width:auto;" onclick="consultar('${p.anilla}')">Ver</button></td>
+        </tr>
+      `;
+    });
+
+    if (currentUserRole === 'admin') {
+      const adminTbody = document.querySelector('#adminTable tbody');
+      adminTbody.innerHTML = '';
+      pajaros.forEach(p => {
+        adminTbody.innerHTML += `
+          <tr>
+            <td><strong>${p.anilla}</strong></td>
+            <td>${p.color}</td>
+            <td><span class="creator-tag">${p.creador}</span></td>
+          </tr>
+        `;
+      });
+    }
+  }
+
+  function consultar(anilla) {
+    document.getElementById('searchAnilla').value = anilla;
+    buscarAnillaAutomatica();
+  }
+
+  function buscarAnillaAutomatica() {
+    const busqueda = document.getElementById('searchAnilla').value.trim().toUpperCase();
+    const target = pajaros.find(p => p.anilla.toUpperCase() === busqueda);
+    const resDiv = document.getElementById('searchResult');
+
+    if (!target || (currentUserRole === 'usuario' && target.creador === 'admin')) {
+      alert('No se encuentra ningún pájaro disponible con esa anilla.');
+      resDiv.style.display = 'none';
+      return;
+    }
+
+    resDiv.style.display = 'block';
+    document.getElementById('targetBirdTitle').innerText = `Ejemplar: ${target.anilla}`;
+    document.getElementById('targetBirdDetails').innerHTML = `Año: <strong>${target.ano}</strong> | Color: <strong>${target.color}</strong>`;
+
+    const listaPremios = [];
+    premios.filter(pr => pr.anilla.toUpperCase() === target.anilla.toUpperCase())
+           .forEach(pr => listaPremios.push({ tipo: 'award', texto: pr.texto }));
+    renderTags('relPremios', listaPremios);
+
+    renderTagsPuras('relPadres', [target.padre, target.madre].filter(Boolean));
+
+    const abuelos = [];
+    [target.padre, target.madre].forEach(pAnilla => {
+      if (pAnilla) {
+        const pObj = pajaros.find(p => p.anilla.toUpperCase() === pAnilla);
+        if (pObj) {
+          if (pObj.padre) abuelos.push(pObj.padre);
+          if (pObj.madre) abuelos.push(pObj.madre);
+        }
+      }
+    });
+    renderTagsPuras('relAbuelos', abuelos);
+
+    const hijos = pajaros.filter(p => (p.padre && p.padre.toUpperCase() === target.anilla.toUpperCase()) || (p.madre && p.madre.toUpperCase() === target.anilla.toUpperCase()))
+                         .map(p => p.anilla);
+    renderTagsPuras('relHijos', hijos);
+
+    const hermanos = pajaros.filter(p => p.anilla.toUpperCase() !== target.anilla.toUpperCase() && 
+                            ((p.padre && target.padre && p.padre.toUpperCase() === target.padre.toUpperCase()) ||
+                             (p.madre && target.madre && p.madre.toUpperCase() === target.madre.toUpperCase())))
+                          .map(p => p.anilla);
+    renderTagsPuras('relHermanos', hermanos);
+
+    const sobrinos = pajaros.filter(p => (p.padre && hermanos.includes(p.padre.toUpperCase())) || (p.madre && hermanos.includes(p.padre.toUpperCase())))
+                          .map(p => p.anilla);
+    renderTagsPuras('relSobrinos', sobrinos);
+  }
+
+  function renderTagsPuras(elementId, listaAnillas) {
+    const container = document.getElementById(elementId);
+    if (listaAnillas.length === 0) {
+      container.innerHTML = `<span class="bird-tag empty">Sin registros</span>`;
+    } else {
+      container.innerHTML = listaAnillas.map(a => `<span class="bird-tag">${a}</span>`).join(' ');
+    }
+  }
+
+  function renderTags(elementId, list) {
+    const container = document.getElementById(elementId);
+    if (list.length === 0) {
+      container.innerHTML = `<span class="bird-tag empty">Sin registros</span>`;
+    } else {
+      container.innerHTML = list.map(item => `<span class="bird-tag ${item.tipo === 'award' ? 'award' : ''}">${item.texto}</span>`).join('<br>');
+    }
+  }
+
+  sincronizarStorage();
+</script>
+
+</body>
+</html>
