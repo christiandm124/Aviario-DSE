@@ -176,6 +176,7 @@
               <tr>
                 <th>Anilla</th>
                 <th>Año</th>
+                <th>Especie / Raza</th>
                 <th>Mutación / Color</th>
                 <th>Acción</th>
               </tr>
@@ -203,8 +204,25 @@
           </div>
 
           <div class="form-group" style="margin-top: 5px;">
+            <label>Especie / Raza:</label>
+            <select id="especie" required>
+              <option value="" disabled selected>-- Selecciona una especie --</option>
+              <option value="Canario">Canario</option>
+              <option value="Jilguero">Jilguero</option>
+              <option value="Verderón Común">Verderón Común</option>
+              <option value="Verderón Chino">Verderón Chino</option>
+              <option value="Verderón Escocés">Verderón Escocés</option>
+              <option value="Verderón Maltés">Verderón Maltés</option>
+              <option value="Verdecillo">Verdecillo</option>
+              <option value="Camachuelo">Camachuelo</option>
+              <option value="Picogordo">Picogordo</option>
+              <option value="Otra Especie">Otra Especie</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-top: 5px;">
             <label>Mutación / Color:</label>
-            <input type="text" id="color" required placeholder="Ej: Clásico, Ágata, Eumo...">
+            <input type="text" id="color" required placeholder="Ej: Clásico, Ágata, Eumo, Bruno...">
           </div>
 
           <button type="submit" style="margin-top: 15px;">Guardar Ejemplar</button>
@@ -233,6 +251,7 @@
             <thead>
               <tr>
                 <th>Anilla</th>
+                <th>Especie</th>
                 <th>Mutación</th>
                 <th>Creador</th>
               </tr>
@@ -279,6 +298,7 @@
     e.preventDefault();
     const anilla = document.getElementById('anilla').value.trim().toUpperCase();
     const ano = document.getElementById('ano').value.trim();
+    const especie = document.getElementById('especie').value;
     const color = document.getElementById('color').value.trim();
 
     if (pajaros.some(p => p.anilla.toUpperCase() === anilla)) {
@@ -286,9 +306,9 @@
       return;
     }
 
-    pajaros.push({ anilla, ano, color, creador: currentUserRole });
+    pajaros.push({ anilla, ano, especie, color, creador: currentUserRole });
     sincronizarStorage();
-    alert(`Ejemplar ${anilla} registrado con éxito.`);
+    alert(`Ejemplar ${anilla} (${especie}) registrado con éxito.`);
     document.getElementById('birdForm').reset();
   }
 
@@ -310,13 +330,14 @@
     tbody.innerHTML = '';
     
     if (visibles.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#777;">No hay ejemplares registrados todavía.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#777;">No hay ejemplares registrados todavía.</td></tr>`;
     } else {
       visibles.forEach(p => {
         tbody.innerHTML += `
           <tr>
             <td><strong>${p.anilla}</strong></td>
             <td>${p.ano}</td>
+            <td>${p.especie || 'No especificada'}</td>
             <td>${p.color}</td>
             <td><button style="padding:4px 8px; font-size:0.8rem; width:auto;" onclick="consultar('${p.anilla}')">Ver</button></td>
           </tr>
@@ -331,6 +352,7 @@
         adminTbody.innerHTML += `
           <tr>
             <td><strong>${p.anilla}</strong></td>
+            <td>${p.especie || 'No especificada'}</td>
             <td>${p.color}</td>
             <td><span class="creator-tag">${p.creador}</span></td>
           </tr>
@@ -356,23 +378,19 @@
     let hijos = [];
     let hermanos = [];
 
-    // Si hay pájaros anteriores, el sistema los asigna automáticamente como posibles reproductores/padres
     if (indexTarget >= 1) padres.push(listaTotal[indexTarget - 1].anilla);
     if (indexTarget >= 2) padres.push(listaTotal[indexTarget - 2].anilla);
 
-    // Abuelos basados en los padres asignados
     padres.forEach(pPadre => {
       let idxP = listaTotal.findIndex(p => p.anilla.toUpperCase() === pPadre.toUpperCase());
       if (idxP >= 1) abuelos.push(listaTotal[idxP - 1].anilla);
       if (idxP >= 2) abuelos.push(listaTotal[idxP - 2].anilla);
     });
 
-    // Hijos: Pájaros registrados justo después en el aviario
     for (let i = indexTarget + 1; i < Math.min(indexTarget + 3, listaTotal.length); i++) {
       hijos.push(listaTotal[i].anilla);
     }
 
-    // Hermanos: Pájaros del mismo año que no sean padres ni hijos
     listaTotal.forEach(p => {
       if (p.anilla.toUpperCase() !== target.anilla.toUpperCase() && p.ano === target.ano && !padres.includes(p.anilla) && !hijos.includes(p.anilla)) {
         hermanos.push(p.anilla);
@@ -395,16 +413,16 @@
 
     resDiv.style.display = 'block';
     document.getElementById('targetBirdTitle').innerText = `Ejemplar: ${target.anilla}`;
-    document.getElementById('targetBirdDetails').innerHTML = `Año: <strong>${target.ano}</strong> | Mutación: <strong>${target.color}</strong>`;
+    document.getElementById('targetBirdDetails').innerHTML = `Especie: <strong>${target.especie || 'No especificada'}</strong> | Año: <strong>${target.ano}</strong> | Mutación: <strong>${target.color}</strong>`;
 
     // Simulador de Cruces automático
     const simContainer = document.getElementById('simuladorCruces');
-    const posiblesParejas = pajaros.filter(p => p.anilla !== target.anilla && p.color !== target.color);
+    const posiblesParejas = pajaros.filter(p => p.anilla !== target.anilla && p.especie === target.especie && p.color !== target.color);
     if (posiblesParejas.length > 0) {
       const sugerida = posiblesParejas[0];
-      simContainer.innerHTML = `<div class="pro-box">💡 <strong>Pareja Sugerida (Evitando consanguinidad):</strong> <span class="bird-tag" onclick="consultar('${sugerida.anilla}')">${sugerida.anilla}</span> (${sugerida.color}).<br>• Coeficiente de Consanguinidad: <strong>0.0%</strong></div>`;
+      simContainer.innerHTML = `<div class="pro-box">💡 <strong>Pareja Sugerida (Misma especie, evitando consanguinidad):</strong> <span class="bird-tag" onclick="consultar('${sugerida.anilla}')">${sugerida.anilla}</span> (${sugerida.color}).<br>• Coeficiente de Consanguinidad: <strong>0.0%</strong></div>`;
     } else {
-      simContainer.innerHTML = `<span class="bird-tag empty">Registra otro ejemplar con distinta mutación para habilitar el simulador de parejas.</span>`;
+      simContainer.innerHTML = `<span class="bird-tag empty">Registra otro ejemplar de la misma especie con distinta mutación para habilitar el simulador.</span>`;
     }
 
     // Premios
