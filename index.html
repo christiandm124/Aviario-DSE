@@ -149,9 +149,48 @@
 
     .gen-tree { font-size: 0.85rem; background: #fafafa; padding: 8px; border-radius: 6px; border: 1px solid #eee; margin-top: 5px; word-break: break-word; }
     .gen-tree p { margin-bottom: 4px; }
+
+    /* MODAL DE CONTRASEÑA PERSONALIZADO */
+    #modalPassword {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 350px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .modal-content h3 { margin-bottom: 10px; color: var(--primary-dark); font-size: 1.1rem; }
+    .modal-content input { margin-bottom: 12px; }
+    .modal-buttons { display: flex; gap: 8px; justify-content: flex-end; }
+    .modal-buttons button { width: auto; padding: 6px 12px; }
+    .btn-cancel { background: #757575; }
+    .btn-cancel:hover { background: #616161; }
   </style>
 </head>
 <body>
+
+<!-- VENTANA MODAL PARA CONTRASEÑA DE ADMINISTRADOR -->
+<div id="modalPassword">
+  <div class="modal-content">
+    <h3>🔐 Acceso de Administrador</h3>
+    <p style="font-size:0.85rem; margin-bottom:8px; color:#555;">Introduce la contraseña para cambiar al modo administrador:</p>
+    <input type="password" id="adminPassInput" placeholder="Contraseña...">
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="cancelarCambioRol()">Cancelar</button>
+      <button onclick="verificarPasswordAdmin()">Entrar</button>
+    </div>
+  </div>
+</div>
 
 <div class="container">
   <header>
@@ -163,7 +202,7 @@
       <button class="btn-export" onclick="exportarBaseDatosTxt()">📥 Exportar BD (.txt)</button>
       <div class="role-selector">
         <label for="userRole" style="color:white; margin:0; font-size:0.8rem;">Vista:</label>
-        <select id="userRole" onchange="cambiarRol()">
+        <select id="userRole" onchange="solicitarCambioRol()">
           <option value="usuario">Usuario Normal</option>
           <option value="admin">Administrador</option>
         </select>
@@ -265,7 +304,7 @@
       </div>
     </div>
 
-    <!-- PANEL DERECHO: FORMULARIOS CON VALIDACIÓN DE CAMPOS VACÍOS -->
+    <!-- PANEL DERECHO: FORMULARIOS -->
     <div>
       <div class="card">
         <h2>➕ Registrar / Actualizar Ejemplar</h2>
@@ -453,6 +492,7 @@
   let compras = JSON.parse(localStorage.getItem('aviario_compras_v3')) || [];
   let cesiones = JSON.parse(localStorage.getItem('aviario_cesiones_v3')) || [];
   let currentUserRole = 'usuario';
+  const PASSWORD_ADMIN = "admin123"; // Contraseña por defecto
 
   function sincronizarStorage() {
     localStorage.setItem('aviario_pajaros_pro_v3', JSON.stringify(pajaros));
@@ -462,7 +502,6 @@
     actualizarVistas();
   }
 
-  // FUNCIÓN DE VALIDACIÓN GLOBAL DE CAMPOS VACÍOS
   function validarCamposFormulario(formularioId) {
     const form = document.getElementById(formularioId);
     const inputs = form.querySelectorAll('input, select');
@@ -477,12 +516,41 @@
     return true;
   }
 
-  function cambiarRol() {
-    currentUserRole = document.getElementById('userRole').value;
-    if (currentUserRole === 'admin') {
-      document.body.classList.add('is-admin');
+  function solicitarCambioRol() {
+    const selector = document.getElementById('userRole');
+    const nuevoRol = selector.value;
+
+    if (nuevoRol === 'admin') {
+      // Mostrar la ventana modal personalizada en lugar del prompt nativo
+      document.getElementById('adminPassInput').value = '';
+      document.getElementById('modalPassword').style.display = 'flex';
+      document.getElementById('adminPassInput').focus();
     } else {
+      currentUserRole = 'usuario';
       document.body.classList.remove('is-admin');
+      actualizarVistas();
+    }
+  }
+
+  function cancelarCambioRol() {
+    document.getElementById('modalPassword').style.display = 'none';
+    document.getElementById('userRole').value = 'usuario';
+    currentUserRole = 'usuario';
+    document.body.classList.remove('is-admin');
+    actualizarVistas();
+  }
+
+  function verificarPasswordAdmin() {
+    let clave = document.getElementById('adminPassInput').value;
+    if (clave === PASSWORD_ADMIN) {
+      currentUserRole = 'admin';
+      document.body.classList.add('is-admin');
+      document.getElementById('modalPassword').style.display = 'none';
+      alert("Acceso concedido como Administrador.");
+    } else {
+      alert("Contraseña incorrecta.");
+      document.getElementById('adminPassInput').value = '';
+      document.getElementById('adminPassInput').focus();
     }
     actualizarVistas();
   }
@@ -493,6 +561,21 @@
     } else {
       return pajaros.filter(p => p.creadorRol !== 'admin');
     }
+  }
+
+  function getComprasVisibles() {
+    if (currentUserRole === 'admin') return compras;
+    return compras.filter(c => c.creadorRol !== 'admin');
+  }
+
+  function getCesionesVisibles() {
+    if (currentUserRole === 'admin') return cesiones;
+    return cesiones.filter(cs => cs.creadorRol !== 'admin');
+  }
+
+  function getPremiosVisibles() {
+    if (currentUserRole === 'admin') return premios;
+    return premios.filter(pr => pr.creadorRol !== 'admin');
   }
 
   function guardarPajaro(e) {
@@ -589,7 +672,7 @@
     const fecha = document.getElementById('compraFecha').value;
     const precio = document.getElementById('compraPrecio').value.trim();
 
-    compras.push({ anilla, especie, vendedor, fecha, precio });
+    compras.push({ anilla, especie, vendedor, fecha, precio, creadorRol: currentUserRole });
     
     let existente = pajaros.find(p => p.anilla.toUpperCase() === anilla);
     if (!existente) {
@@ -612,7 +695,7 @@
     const fecha = document.getElementById('cesionFecha').value;
     const condiciones = document.getElementById('cesionCondiciones').value.trim();
 
-    cesiones.push({ anilla, destino, fecha, condiciones });
+    cesiones.push({ anilla, destino, fecha, condiciones, creadorRol: currentUserRole });
     sincronizarStorage();
     alert('Cesión / Venta registrada correctamente.');
     document.getElementById('cesionForm').reset();
@@ -625,7 +708,7 @@
     const anilla = document.getElementById('awardAnilla').value.trim().toUpperCase();
     const texto = document.getElementById('premioDesc').value.trim();
 
-    premios.push({ anilla, texto });
+    premios.push({ anilla, texto, creadorRol: currentUserRole });
     sincronizarStorage();
     alert('Premio registrado correctamente.');
     document.getElementById('awardForm').reset();
@@ -670,7 +753,8 @@
     const alertContainer = document.getElementById('alertasGenetica');
     const sexoOpuesto = target.sexo === 'Macho' ? 'Hembra' : 'Macho';
     
-    const posiblesParejas = pajaros.filter(p => 
+    const visiblesDisponibles = getPajarosVisibles();
+    const posiblesParejas = visiblesDisponibles.filter(p => 
       p.anilla !== target.anilla && 
       p.especie.toLowerCase() === target.especie.toLowerCase() && 
       p.sexo === sexoOpuesto
@@ -697,8 +781,8 @@
       alertContainer.innerHTML = '';
     }
 
-    let listaPremios = premios.filter(pr => pr.anilla.toUpperCase() === target.anilla.toUpperCase());
-    renderTagsPremios('relPremios', listaPremios);
+    let listaPremiosVisibles = getPremiosVisibles().filter(pr => pr.anilla.toUpperCase() === target.anilla.toUpperCase());
+    renderTagsPremios('relPremios', listaPremiosVisibles);
 
     let arbolHtml = `
       <p><strong>Padre:</strong> ${arbol.padre ? `<span class="bird-tag" onclick="consultar('${arbol.padre.anilla}')">${arbol.padre.anilla}</span>` : 'No registrado'}</p>
@@ -708,10 +792,11 @@
     `;
     document.getElementById('arbolGenealogicoCompleto').innerHTML = arbolHtml;
 
-    let hermanos = pajaros.filter(p => p.anilla !== target.anilla && ((p.padre && p.padre === target.padre) || (p.madre && p.madre === target.madre)));
+    let visiblesTotal = getPajarosVisibles();
+    let hermanos = visiblesTotal.filter(p => p.anilla !== target.anilla && ((p.padre && p.padre === target.padre) || (p.madre && p.madre === target.madre)));
     renderTagsPuras('relHermanosTios', hermanos.map(h => h.anilla));
 
-    let hijos = pajaros.filter(p => (p.padre && p.padre.toUpperCase() === target.anilla.toUpperCase()) || (p.madre && p.madre.toUpperCase() === target.anilla.toUpperCase()));
+    let hijos = visiblesTotal.filter(p => (p.padre && p.padre.toUpperCase() === target.anilla.toUpperCase()) || (p.madre && p.madre.toUpperCase() === target.anilla.toUpperCase()));
     renderTagsPuras('relHijos', hijos.map(h => h.anilla));
   }
 
@@ -757,13 +842,15 @@
       });
     }
 
+    const comprasVisibles = getComprasVisibles();
     const comprasTbody = document.querySelector('#comprasTable tbody');
-    comprasTbody.innerHTML = compras.length === 0 ? `<tr><td colspan="5" style="text-align:center; color:#777;">Sin compras.</td></tr>` : 
-      compras.map(c => `<tr><td><strong>${c.anilla}</strong></td><td>${c.especie}</td><td>${c.vendedor}</td><td>${c.fecha}</td><td>${c.precio}</td></tr>`).join('');
+    comprasTbody.innerHTML = comprasVisibles.length === 0 ? `<tr><td colspan="5" style="text-align:center; color:#777;">Sin compras.</td></tr>` : 
+      comprasVisibles.map(c => `<tr><td><strong>${c.anilla}</strong></td><td>${c.especie}</td><td>${c.vendedor}</td><td>${c.fecha}</td><td>${c.precio}</td></tr>`).join('');
 
+    const cesionesVisibles = getCesionesVisibles();
     const cesionesTbody = document.querySelector('#cesionesTable tbody');
-    cesionesTbody.innerHTML = cesiones.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:#777;">Sin cesiones.</td></tr>` : 
-      cesiones.map(cs => `<tr><td><strong>${cs.anilla}</strong></td><td>${cs.destino}</td><td>${cs.fecha}</td><td>${cs.condiciones}</td></tr>`).join('');
+    cesionesTbody.innerHTML = cesionesVisibles.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:#777;">Sin cesiones.</td></tr>` : 
+      cesionesVisibles.map(cs => `<tr><td><strong>${cs.anilla}</strong></td><td>${cs.destino}</td><td>${cs.fecha}</td><td>${cs.condiciones}</td></tr>`).join('');
 
     if (currentUserRole === 'admin') {
       const adminTbody = document.querySelector('#adminTable tbody');
@@ -791,23 +878,27 @@
 
   function exportarBaseDatosTxt() {
     let contenidoTxt = "=== BASE DE DATOS AVIARIO DSE (ORNITGENEALOGÍA PRO) ===\n\n";
+    let pExportar = getPajarosVisibles();
     contenidoTxt += "--- EJEMPLARES ---\n";
-    pajaros.forEach((p, idx) => {
+    pExportar.forEach((p, idx) => {
       contenidoTxt += `${idx + 1}. Anilla: ${p.anilla} | Especie: ${p.especie} | Sexo: ${p.sexo} | Mutación: ${p.color} | Año: ${p.ano} | Padre: ${p.padre || 'N/A'} | Madre: ${p.madre || 'N/A'} | Criador: ${p.criadorPajaro}\n`;
     });
     
+    let cExportar = getComprasVisibles();
     contenidoTxt += "\n--- COMPRAS ---\n";
-    compras.forEach((c, idx) => {
+    cExportar.forEach((c, idx) => {
       contenidoTxt += `${idx + 1}. Anilla: ${c.anilla} | Especie: ${c.especie} | Vendedor: ${c.vendedor} | Fecha: ${c.fecha} | Precio: ${c.precio}\n`;
     });
 
+    let csExportar = getCesionesVisibles();
     contenidoTxt += "\n--- CESIONES ---\n";
-    cesiones.forEach((cs, idx) => {
+    csExportar.forEach((cs, idx) => {
       contenidoTxt += `${idx + 1}. Anilla: ${cs.anilla} | Destino: ${cs.destino} | Fecha: ${cs.fecha} | Condiciones: ${cs.condiciones}\n`;
     });
 
+    let prExportar = getPremiosVisibles();
     contenidoTxt += "\n--- PREMIOS ---\n";
-    premios.forEach((pr, idx) => {
+    prExportar.forEach((pr, idx) => {
       contenidoTxt += `${idx + 1}. Anilla: ${pr.anilla} | Premio: ${pr.texto}\n`;
     });
 
