@@ -225,9 +225,9 @@
             <div class="form-group">
               <label>Sexo:</label>
               <select id="sexo" required>
+                <option value="" disabled selected>-- Selecciona sexo --</option>
                 <option value="Macho">Macho</option>
                 <option value="Hembra">Hembra</option>
-                <!-- <option value="Sin determinar">Sin determinar / Pollo</option> -->
               </select>
             </div>
           </div>
@@ -444,20 +444,20 @@
 
     // Simulador de Cruces automático (Busca sexo opuesto de la misma especie)
     const simContainer = document.getElementById('simuladorCruces');
-    const sexoOpuesto = target.sexo === 'Macho' ? 'Hembra' : (target.sexo === 'Hembra' ? 'Macho' : null);
+    const sexoOpuesto = target.sexo === 'Macho' ? 'Hembra' : 'Macho';
     
     const posiblesParejas = pajaros.filter(p => 
       p.anilla !== target.anilla && 
       p.especie === target.especie && 
       p.color !== target.color &&
-      (sexoOpuesto ? p.sexo === sexoOpuesto || p.sexo === 'Sin determinar' : true)
+      p.sexo === sexoOpuesto
     );
 
     if (posiblesParejas.length > 0) {
       const sugerida = posiblesParejas[0];
-      simContainer.innerHTML = `<div class="pro-box">💡 <strong>Pareja Sugerida (${sugerida.sexo || 'Compatible'}):</strong> <span class="bird-tag" onclick="consultar('${sugerida.anilla}')">${sugerida.anilla}</span> (${sugerida.color}).<br>• Coeficiente de Consanguinidad: <strong>0.0%</strong></div>`;
+      simContainer.innerHTML = `<div class="pro-box">💡 <strong>Pareja Sugerida (${sugerida.sexo}):</strong> <span class="bird-tag" onclick="consultar('${sugerida.anilla}')">${sugerida.anilla}</span> (${sugerida.color}).<br>• Coeficiente de Consanguinidad: <strong>0.0%</strong></div>`;
     } else {
-      simContainer.innerHTML = `<span class="bird-tag empty">No hay parejas compatibles registradas de la misma especie con distinta mutación.</span>`;
+      simContainer.innerHTML = `<span class="bird-tag empty">No hay parejas compatibles registradas de sexo opuesto, misma especie y distinta mutación.</span>`;
     }
 
     // Premios
