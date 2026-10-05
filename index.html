@@ -521,7 +521,6 @@
     const nuevoRol = selector.value;
 
     if (nuevoRol === 'admin') {
-      // Mostrar la ventana modal personalizada en lugar del prompt nativo
       document.getElementById('adminPassInput').value = '';
       document.getElementById('modalPassword').style.display = 'flex';
       document.getElementById('adminPassInput').focus();
@@ -547,12 +546,14 @@
       document.body.classList.add('is-admin');
       document.getElementById('modalPassword').style.display = 'none';
       alert("Acceso concedido como Administrador.");
+      
+      // FUERZA EL REFRESCO INMEDIATO DE TODAS LAS VISTAS Y TABLAS
+      sincronizarStorage(); 
     } else {
       alert("Contraseña incorrecta.");
       document.getElementById('adminPassInput').value = '';
       document.getElementById('adminPassInput').focus();
     }
-    actualizarVistas();
   }
 
   function getPajarosVisibles() {
@@ -739,8 +740,8 @@
     const target = pajaros.find(p => p.anilla.toUpperCase() === busqueda);
     const resDiv = document.getElementById('searchResult');
 
-    if (!target || (currentUserRole === 'usuario' && target.creadorRol === 'admin')) {
-      alert('No se encuentra ningún ejemplar disponible con esa anilla.');
+    if (!target) {
+      alert('No se encuentra ningún ejemplar registrado con esa anilla.');
       resDiv.style.display = 'none';
       return;
     }
