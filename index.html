@@ -176,8 +176,10 @@
               <tr>
                 <th>Anilla</th>
                 <th>Año</th>
-                <th>Especie / Raza</th>
-                <th>Mutación / Color</th>
+                <th>Especie</th>
+                <th>Sexo</th>
+                <th>Mutación</th>
+                <th>Criador</th>
                 <th>Acción</th>
               </tr>
             </thead>
@@ -203,26 +205,42 @@
             </div>
           </div>
 
-          <div class="form-group" style="margin-top: 5px;">
-            <label>Especie / Raza:</label>
-            <select id="especie" required>
-              <option value="" disabled selected>-- Selecciona una especie --</option>
-              <option value="Canario">Canario</option>
-              <option value="Jilguero">Jilguero</option>
-              <option value="Verderón Común">Verderón Común</option>
-              <option value="Verderón Chino">Verderón Chino</option>
-              <option value="Verderón Escocés">Verderón Escocés</option>
-              <option value="Verderón Maltés">Verderón Maltés</option>
-              <option value="Verdecillo">Verdecillo</option>
-              <option value="Camachuelo">Camachuelo</option>
-              <option value="Picogordo">Picogordo</option>
-              <option value="Otra Especie">Otra Especie</option>
-            </select>
+          <div class="form-row" style="margin-top: 5px;">
+            <div class="form-group">
+              <label>Especie / Raza:</label>
+              <select id="especie" required>
+                <option value="" disabled selected>-- Selecciona especie --</option>
+                <option value="Canario">Canario</option>
+                <option value="Jilguero">Jilguero</option>
+                <option value="Verderón Común">Verderón Común</option>
+                <option value="Verderón Chino">Verderón Chino</option>
+                <option value="Verderón Escocés">Verderón Escocés</option>
+                <option value="Verderón Maltés">Verderón Maltés</option>
+                <option value="Verdecillo">Verdecillo</option>
+                <option value="Camachuelo">Camachuelo</option>
+                <option value="Picogordo">Picogordo</option>
+                <option value="Otra Especie">Otra Especie</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Sexo:</label>
+              <select id="sexo" required>
+                <option value="Macho">Macho</option>
+                <option value="Hembra">Hembra</option>
+                <option value="Sin determinar">Sin determinar / Pollo</option>
+              </select>
+            </div>
           </div>
 
-          <div class="form-group" style="margin-top: 5px;">
-            <label>Mutación / Color:</label>
-            <input type="text" id="color" required placeholder="Ej: Clásico, Ágata, Eumo, Bruno...">
+          <div class="form-row" style="margin-top: 5px;">
+            <div class="form-group">
+              <label>Mutación / Color:</label>
+              <input type="text" id="color" required placeholder="Ej: Clásico, Ágata, Bruno...">
+            </div>
+            <div class="form-group">
+              <label>Criador:</label>
+              <input type="text" id="criadorPajaro" required placeholder="Ej: Aviario DSE o Propio">
+            </div>
           </div>
 
           <button type="submit" style="margin-top: 15px;">Guardar Ejemplar</button>
@@ -252,8 +270,10 @@
               <tr>
                 <th>Anilla</th>
                 <th>Especie</th>
+                <th>Sexo</th>
                 <th>Mutación</th>
-                <th>Creador</th>
+                <th>Criador Pájaro</th>
+                <th>Rol Gestor</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -290,7 +310,7 @@
     if (currentUserRole === 'admin') {
       return pajaros;
     } else {
-      return pajaros.filter(p => p.creador !== 'admin');
+      return pajaros.filter(p => p.creadorRol !== 'admin');
     }
   }
 
@@ -299,17 +319,20 @@
     const anilla = document.getElementById('anilla').value.trim().toUpperCase();
     const ano = document.getElementById('ano').value.trim();
     const especie = document.getElementById('especie').value;
+    const sexo = document.getElementById('sexo').value;
     const color = document.getElementById('color').value.trim();
+    const criadorPajaro = document.getElementById('criadorPajaro').value.trim();
 
     if (pajaros.some(p => p.anilla.toUpperCase() === anilla)) {
       alert('¡Esta anilla ya existe en el sistema!');
       return;
     }
 
-    pajaros.push({ anilla, ano, especie, color, creador: currentUserRole });
+    pajaros.push({ anilla, ano, especie, sexo, color, criadorPajaro, creadorRol: currentUserRole });
     sincronizarStorage();
     alert(`Ejemplar ${anilla} (${especie}) registrado con éxito.`);
     document.getElementById('birdForm').reset();
+    document.getElementById('ano').value = '2026';
   }
 
   function guardarPremio(e) {
@@ -330,15 +353,17 @@
     tbody.innerHTML = '';
     
     if (visibles.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#777;">No hay ejemplares registrados todavía.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#777;">No hay ejemplares registrados todavía.</td></tr>`;
     } else {
       visibles.forEach(p => {
         tbody.innerHTML += `
           <tr>
             <td><strong>${p.anilla}</strong></td>
             <td>${p.ano}</td>
-            <td>${p.especie || 'No especificada'}</td>
+            <td>${p.especie || 'No esp.'}</td>
+            <td>${p.sexo || 'N/D'}</td>
             <td>${p.color}</td>
+            <td>${p.criadorPajaro || 'Desconocido'}</td>
             <td><button style="padding:4px 8px; font-size:0.8rem; width:auto;" onclick="consultar('${p.anilla}')">Ver</button></td>
           </tr>
         `;
@@ -352,9 +377,11 @@
         adminTbody.innerHTML += `
           <tr>
             <td><strong>${p.anilla}</strong></td>
-            <td>${p.especie || 'No especificada'}</td>
+            <td>${p.especie || 'No esp.'}</td>
+            <td>${p.sexo || 'N/D'}</td>
             <td>${p.color}</td>
-            <td><span class="creator-tag">${p.creador}</span></td>
+            <td>${p.criadorPajaro || 'Desconocido'}</td>
+            <td><span class="creator-tag">${p.creadorRol}</span></td>
           </tr>
         `;
       });
@@ -405,7 +432,7 @@
     const target = pajaros.find(p => p.anilla.toUpperCase() === busqueda);
     const resDiv = document.getElementById('searchResult');
 
-    if (!target || (currentUserRole === 'usuario' && target.creador === 'admin')) {
+    if (!target || (currentUserRole === 'usuario' && target.creadorRol === 'admin')) {
       alert('No se encuentra ningún ejemplar disponible con esa anilla.');
       resDiv.style.display = 'none';
       return;
@@ -413,16 +440,24 @@
 
     resDiv.style.display = 'block';
     document.getElementById('targetBirdTitle').innerText = `Ejemplar: ${target.anilla}`;
-    document.getElementById('targetBirdDetails').innerHTML = `Especie: <strong>${target.especie || 'No especificada'}</strong> | Año: <strong>${target.ano}</strong> | Mutación: <strong>${target.color}</strong>`;
+    document.getElementById('targetBirdDetails').innerHTML = `Especie: <strong>${target.especie || 'No esp.'}</strong> | Sexo: <strong>${target.sexo || 'N/D'}</strong> | Año: <strong>${target.ano}</strong> | Mutación: <strong>${target.color}</strong> | Criador: <strong>${target.criadorPajaro || 'Desconocido'}</strong>`;
 
-    // Simulador de Cruces automático
+    // Simulador de Cruces automático (Busca sexo opuesto de la misma especie)
     const simContainer = document.getElementById('simuladorCruces');
-    const posiblesParejas = pajaros.filter(p => p.anilla !== target.anilla && p.especie === target.especie && p.color !== target.color);
+    const sexoOpuesto = target.sexo === 'Macho' ? 'Hembra' : (target.sexo === 'Hembra' ? 'Macho' : null);
+    
+    const posiblesParejas = pajaros.filter(p => 
+      p.anilla !== target.anilla && 
+      p.especie === target.especie && 
+      p.color !== target.color &&
+      (sexoOpuesto ? p.sexo === sexoOpuesto || p.sexo === 'Sin determinar' : true)
+    );
+
     if (posiblesParejas.length > 0) {
       const sugerida = posiblesParejas[0];
-      simContainer.innerHTML = `<div class="pro-box">💡 <strong>Pareja Sugerida (Misma especie, evitando consanguinidad):</strong> <span class="bird-tag" onclick="consultar('${sugerida.anilla}')">${sugerida.anilla}</span> (${sugerida.color}).<br>• Coeficiente de Consanguinidad: <strong>0.0%</strong></div>`;
+      simContainer.innerHTML = `<div class="pro-box">💡 <strong>Pareja Sugerida (${sugerida.sexo || 'Compatible'}):</strong> <span class="bird-tag" onclick="consultar('${sugerida.anilla}')">${sugerida.anilla}</span> (${sugerida.color}).<br>• Coeficiente de Consanguinidad: <strong>0.0%</strong></div>`;
     } else {
-      simContainer.innerHTML = `<span class="bird-tag empty">Registra otro ejemplar de la misma especie con distinta mutación para habilitar el simulador.</span>`;
+      simContainer.innerHTML = `<span class="bird-tag empty">No hay parejas compatibles registradas de la misma especie con distinta mutación.</span>`;
     }
 
     // Premios
