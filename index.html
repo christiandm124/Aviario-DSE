@@ -124,7 +124,6 @@
     .bird-tag.award { background: #fffde7; color: var(--gold); border-color: #fff59d; cursor: default; }
     .bird-tag.empty { background: #f5f5f5; color: #666; border-color: #ddd; font-weight: normal; cursor: default; }
 
-    /* CONTENEDOR DE TABLAS ADAPTABLES CON SCROLL SUAVE EN MÓVIL */
     .table-responsive { 
       width: 100%; 
       overflow-x: auto; 
@@ -173,7 +172,7 @@
   </header>
 
   <div class="grid">
-    <!-- PANEL IZQUIERDO: CONSULTA, SIMULADOR Y LISTADOS -->
+    <!-- PANEL IZQUIERDO -->
     <div>
       <div class="card">
         <h2>🔍 Consulta y Genética JS Inteligente</h2>
@@ -266,7 +265,7 @@
       </div>
     </div>
 
-    <!-- PANEL DERECHO: REGISTROS Y FORMULARIOS -->
+    <!-- PANEL DERECHO: FORMULARIOS CON VALIDACIÓN DE CAMPOS VACÍOS -->
     <div>
       <div class="card">
         <h2>➕ Registrar / Actualizar Ejemplar</h2>
@@ -463,13 +462,14 @@
     actualizarVistas();
   }
 
+  // FUNCIÓN DE VALIDACIÓN GLOBAL DE CAMPOS VACÍOS
   function validarCamposFormulario(formularioId) {
     const form = document.getElementById(formularioId);
     const inputs = form.querySelectorAll('input, select');
     for (let input of inputs) {
       if (input.value.trim() === '') {
         const nombreCampo = input.getAttribute('data-label') || 'campo obligatorio';
-        alert(`Falta por completar el campo: ${nombreCampo}`);
+        alert(`⚠ Atención: Falta por completar el campo "${nombreCampo}".`);
         input.focus();
         return false;
       }
@@ -543,12 +543,12 @@
     let madreObj = pajaros.find(p => p.anilla.toUpperCase() === madreAnilla);
 
     if (!padreObj || !madreObj) {
-      alert('Error: El padre o la madre no existen en el aviario.');
+      alert('Error: El padre o la madre introducidos no existen en el aviario.');
       return;
     }
 
     if (padreObj.sexo !== 'Macho' || madreObj.sexo !== 'Hembra') {
-      alert('Error: El padre debe ser Macho y la Madre Hembra.');
+      alert('Error: El padre debe ser obligatoriamente Macho y la Madre Hembra.');
       return;
     }
 
@@ -693,3 +693,133 @@
         alertContainer.innerHTML = `<div class="pro-box" style="background:#e8f5e9; border-left-color:#2e7d32;">✅ <strong>Control Genético Óptimo:</strong> Sin consanguinidad directa con la pareja sugerida.</div>`;
       }
     } else {
+      simContainer.innerHTML = `<span class="bird-tag empty">No hay parejas compatibles registradas.</span>`;
+      alertContainer.innerHTML = '';
+    }
+
+    let listaPremios = premios.filter(pr => pr.anilla.toUpperCase() === target.anilla.toUpperCase());
+    renderTagsPremios('relPremios', listaPremios);
+
+    let arbolHtml = `
+      <p><strong>Padre:</strong> ${arbol.padre ? `<span class="bird-tag" onclick="consultar('${arbol.padre.anilla}')">${arbol.padre.anilla}</span>` : 'No registrado'}</p>
+      <p><strong>Madre:</strong> ${arbol.madre ? `<span class="bird-tag" onclick="consultar('${arbol.madre.anilla}')">${arbol.madre.anilla}</span>` : 'No registrado'}</p>
+      <p><strong>Abuelos Paternos:</strong> ${arbol.abueloP ? arbol.abueloP.anilla : '?'} / ${arbol.abuelaP ? arbol.abuelaP.anilla : '?'}</p>
+      <p><strong>Abuelos Maternos:</strong> ${arbol.abueloM ? arbol.abueloM.anilla : '?'} / ${arbol.abuelaM ? arbol.abuelaM.anilla : '?'}</p>
+    `;
+    document.getElementById('arbolGenealogicoCompleto').innerHTML = arbolHtml;
+
+    let hermanos = pajaros.filter(p => p.anilla !== target.anilla && ((p.padre && p.padre === target.padre) || (p.madre && p.madre === target.madre)));
+    renderTagsPuras('relHermanosTios', hermanos.map(h => h.anilla));
+
+    let hijos = pajaros.filter(p => (p.padre && p.padre.toUpperCase() === target.anilla.toUpperCase()) || (p.madre && p.madre.toUpperCase() === target.anilla.toUpperCase()));
+    renderTagsPuras('relHijos', hijos.map(h => h.anilla));
+  }
+
+  function renderTagsPuras(elementId, listaAnillas) {
+    const container = document.getElementById(elementId);
+    if (!listaAnillas || listaAnillas.length === 0) {
+      container.innerHTML = `<span class="bird-tag empty">Sin registros</span>`;
+    } else {
+      container.innerHTML = listaAnillas.map(a => `<span class="bird-tag" onclick="consultar('${a}')">${a}</span>`).join(' ');
+    }
+  }
+
+  function renderTagsPremios(elementId, list) {
+    const container = document.getElementById(elementId);
+    if (list.length === 0) {
+      container.innerHTML = `<span class="bird-tag empty">Sin premios registrados</span>`;
+    } else {
+      container.innerHTML = list.map(item => `<span class="bird-tag award">${item.texto}</span>`).join('<br>');
+    }
+  }
+
+  function actualizarVistas() {
+    const visibles = getPajarosVisibles();
+    const tbody = document.querySelector('#mainTable tbody');
+    tbody.innerHTML = '';
+    
+    if (visibles.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#777;">No hay ejemplares registrados todavía.</td></tr>`;
+    } else {
+      visibles.forEach(p => {
+        let infoPadres = (p.padre || p.madre) ? `${p.padre || '?'} x ${p.madre || '?'}` : 'Base / Sin asignar';
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>${p.anilla}</strong></td>
+            <td>${p.ano}</td>
+            <td>${p.especie || 'No esp.'}</td>
+            <td>${p.sexo || 'N/D'}</td>
+            <td>${p.color}</td>
+            <td><small>${infoPadres}</small></td>
+            <td><button style="padding:3px 6px; font-size:0.75rem; width:auto;" onclick="consultar('${p.anilla}')">Ver</button></td>
+          </tr>
+        `;
+      });
+    }
+
+    const comprasTbody = document.querySelector('#comprasTable tbody');
+    comprasTbody.innerHTML = compras.length === 0 ? `<tr><td colspan="5" style="text-align:center; color:#777;">Sin compras.</td></tr>` : 
+      compras.map(c => `<tr><td><strong>${c.anilla}</strong></td><td>${c.especie}</td><td>${c.vendedor}</td><td>${c.fecha}</td><td>${c.precio}</td></tr>`).join('');
+
+    const cesionesTbody = document.querySelector('#cesionesTable tbody');
+    cesionesTbody.innerHTML = cesiones.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:#777;">Sin cesiones.</td></tr>` : 
+      cesiones.map(cs => `<tr><td><strong>${cs.anilla}</strong></td><td>${cs.destino}</td><td>${cs.fecha}</td><td>${cs.condiciones}</td></tr>`).join('');
+
+    if (currentUserRole === 'admin') {
+      const adminTbody = document.querySelector('#adminTable tbody');
+      adminTbody.innerHTML = '';
+      pajaros.forEach(p => {
+        let infoPadres = (p.padre || p.madre) ? `${p.padre || '?'} x ${p.madre || '?'}` : 'Base';
+        adminTbody.innerHTML += `
+          <tr>
+            <td><strong>${p.anilla}</strong></td>
+            <td>${p.especie || 'No esp.'}</td>
+            <td>${p.sexo || 'N/D'}</td>
+            <td>${p.color}</td>
+            <td><small>${infoPadres}</small></td>
+            <td><span class="creator-tag">${p.creadorRol}</span></td>
+          </tr>
+        `;
+      });
+    }
+  }
+
+  function consultar(anilla) {
+    document.getElementById('searchAnilla').value = anilla;
+    buscarAnillaAutomatica();
+  }
+
+  function exportarBaseDatosTxt() {
+    let contenidoTxt = "=== BASE DE DATOS AVIARIO DSE (ORNITGENEALOGÍA PRO) ===\n\n";
+    contenidoTxt += "--- EJEMPLARES ---\n";
+    pajaros.forEach((p, idx) => {
+      contenidoTxt += `${idx + 1}. Anilla: ${p.anilla} | Especie: ${p.especie} | Sexo: ${p.sexo} | Mutación: ${p.color} | Año: ${p.ano} | Padre: ${p.padre || 'N/A'} | Madre: ${p.madre || 'N/A'} | Criador: ${p.criadorPajaro}\n`;
+    });
+    
+    contenidoTxt += "\n--- COMPRAS ---\n";
+    compras.forEach((c, idx) => {
+      contenidoTxt += `${idx + 1}. Anilla: ${c.anilla} | Especie: ${c.especie} | Vendedor: ${c.vendedor} | Fecha: ${c.fecha} | Precio: ${c.precio}\n`;
+    });
+
+    contenidoTxt += "\n--- CESIONES ---\n";
+    cesiones.forEach((cs, idx) => {
+      contenidoTxt += `${idx + 1}. Anilla: ${cs.anilla} | Destino: ${cs.destino} | Fecha: ${cs.fecha} | Condiciones: ${cs.condiciones}\n`;
+    });
+
+    contenidoTxt += "\n--- PREMIOS ---\n";
+    premios.forEach((pr, idx) => {
+      contenidoTxt += `${idx + 1}. Anilla: ${pr.anilla} | Premio: ${pr.texto}\n`;
+    });
+
+    let blob = new Blob([contenidoTxt], { type: 'text/plain;charset=utf-8' });
+    let link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'BaseDeDatos_AviarioDSE.txt';
+    link.click();
+  }
+
+  sincronizarStorage();
+</script>
+
+</body>
+</html>
