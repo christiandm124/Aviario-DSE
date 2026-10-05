@@ -141,7 +141,7 @@
   </header>
 
   <div class="grid">
-    <!-- PANEL IZQUIERDO: CONSULTA, SIMULADOR Y LISTADO -->
+    <!-- PANEL IZQUIERDO: CONSULTA, SIMULADOR Y LISTADOS -->
     <div>
       <div class="card">
         <h2>🔍 Consulta y Genética JS Inteligente</h2>
@@ -197,32 +197,69 @@
           </table>
         </div>
       </div>
+
+      <!-- NUEVA SECCIÓN: LISTADO DE COMPRAS -->
+      <div class="card">
+        <h2>🛒 Registro de Compras</h2>
+        <div class="table-responsive">
+          <table id="comprasTable">
+            <thead>
+              <tr>
+                <th>Anilla</th>
+                <th>Especie</th>
+                <th>Vendedor / Origen</th>
+                <th>Fecha</th>
+                <th>Precio</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- NUEVA SECCIÓN: LISTADO DE CESIONES -->
+      <div class="card">
+        <h2>🤝 Registro de Cesiones / Ventas</h2>
+        <div class="table-responsive">
+          <table id="cesionesTable">
+            <thead>
+              <tr>
+                <th>Anilla</th>
+                <th>Adquiriente / Destino</th>
+                <th>Fecha</th>
+                <th>Condiciones</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
-    <!-- PANEL DERECHO: REGISTROS Y FICHA DE CRÍA JS -->
+    <!-- PANEL DERECHO: REGISTROS Y FORMULARIOS -->
     <div>
       <div class="card">
         <h2>➕ Registrar / Actualizar Ejemplar</h2>
         <form id="birdForm" onsubmit="guardarPajaro(event)">
           <div class="form-row">
             <div class="form-group">
-              <label>Nº Anilla:</label>
-              <input type="text" id="anilla" required placeholder="Ej: ES-26-001">
+              <label>Nº Anilla: *</label>
+              <input type="text" id="anilla" placeholder="Ej: ES-26-001" data-label="Nº Anilla">
             </div>
             <div class="form-group">
-              <label>Año Anilla:</label>
-              <input type="number" id="ano" required value="2026">
+              <label>Año Anilla: *</label>
+              <input type="number" id="ano" value="2026" data-label="Año Anilla">
             </div>
           </div>
 
           <div class="form-row" style="margin-top: 5px;">
             <div class="form-group">
-              <label>Especie / Raza (Escrito a mano):</label>
-              <input type="text" id="especie" required placeholder="Ej: Canario / Jilguero Mayor / Parva">
+              <label>Especie / Raza: *</label>
+              <input type="text" id="especie" placeholder="Ej: Canario / Jilguero" data-label="Especie / Raza">
             </div>
             <div class="form-group">
-              <label>Sexo:</label>
-              <select id="sexo" required>
+              <label>Sexo: *</label>
+              <select id="sexo" data-label="Sexo">
                 <option value="" disabled selected>-- Selecciona sexo --</option>
                 <option value="Macho">Macho</option>
                 <option value="Hembra">Hembra</option>
@@ -232,12 +269,12 @@
 
           <div class="form-row" style="margin-top: 5px;">
             <div class="form-group">
-              <label>Mutación / Fenotipo (Escrito a mano):</label>
-              <input type="text" id="color" required placeholder="Ej: Clásico, Ágata, Bruno...">
+              <label>Mutación / Fenotipo: *</label>
+              <input type="text" id="color" placeholder="Ej: Clásico, Ágata..." data-label="Mutación / Fenotipo">
             </div>
             <div class="form-group">
-              <label>Criador:</label>
-              <input type="text" id="criadorPajaro" required placeholder="Ej: Aviario DSE o Propio">
+              <label>Criador: *</label>
+              <input type="text" id="criadorPajaro" placeholder="Ej: Aviario DSE" data-label="Criador">
             </div>
           </div>
 
@@ -250,22 +287,22 @@
         <form id="breedingForm" onsubmit="registrarCria(event)">
           <div class="form-row">
             <div class="form-group">
-              <label>Anilla del Padre (Macho):</label>
-              <input type="text" id="padreAnilla" required placeholder="Ej: ES-25-010">
+              <label>Anilla del Padre (Macho): *</label>
+              <input type="text" id="padreAnilla" placeholder="Ej: ES-25-010" data-label="Anilla del Padre">
             </div>
             <div class="form-group">
-              <label>Anilla de la Madre (Hembra):</label>
-              <input type="text" id="madreAnilla" required placeholder="Ej: ES-25-015">
+              <label>Anilla de la Madre (Hembra): *</label>
+              <input type="text" id="madreAnilla" placeholder="Ej: ES-25-015" data-label="Anilla de la Madre">
             </div>
           </div>
           <div class="form-row" style="margin-top: 5px;">
             <div class="form-group">
-              <label>Nº Anilla del Hijo/a:</label>
-              <input type="text" id="hijoAnilla" required placeholder="Ej: ES-26-100">
+              <label>Nº Anilla del Hijo/a: *</label>
+              <input type="text" id="hijoAnilla" placeholder="Ej: ES-26-100" data-label="Nº Anilla del Hijo/a">
             </div>
             <div class="form-group">
-              <label>Sexo del Hijo/a:</label>
-              <select id="hijoSexo" required>
+              <label>Sexo del Hijo/a: *</label>
+              <select id="hijoSexo" data-label="Sexo del Hijo/a">
                 <option value="" disabled selected>-- Selecciona sexo --</option>
                 <option value="Macho">Macho</option>
                 <option value="Hembra">Hembra</option>
@@ -274,15 +311,75 @@
           </div>
           <div class="form-row" style="margin-top: 5px;">
             <div class="form-group">
-              <label>Mutación del Hijo/a:</label>
-              <input type="text" id="hijoColor" required placeholder="Ej: Ágata portador de Bruno">
+              <label>Mutación del Hijo/a: *</label>
+              <input type="text" id="hijoColor" placeholder="Ej: Ágata portador" data-label="Mutación del Hijo/a">
             </div>
             <div class="form-group">
-              <label>Año:</label>
-              <input type="number" id="hijoAno" required value="2026">
+              <label>Año: *</label>
+              <input type="number" id="hijoAno" value="2026" data-label="Año del Hijo/a">
             </div>
           </div>
           <button type="submit" style="margin-top: 15px;">Registrar Cruce y Generar Descendencia</button>
+        </form>
+      </div>
+
+      <!-- NUEVO FORMULARIO: REGISTRAR COMPRA -->
+      <div class="card">
+        <h2>🛒 Registrar Compra de Ejemplar</h2>
+        <form id="compraForm" onsubmit="guardarCompra(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nº Anilla: *</label>
+              <input type="text" id="compraAnilla" placeholder="Ej: ES-26-999" data-label="Nº Anilla de Compra">
+            </div>
+            <div class="form-group">
+              <label>Especie: *</label>
+              <input type="text" id="compraEspecie" placeholder="Ej: Canario" data-label="Especie de Compra">
+            </div>
+          </div>
+          <div class="form-row" style="margin-top: 5px;">
+            <div class="form-group">
+              <label>Vendedor / Origen: *</label>
+              <input type="text" id="compraVendedor" placeholder="Nombre del criador o tienda" data-label="Vendedor / Origen">
+            </div>
+            <div class="form-group">
+              <label>Fecha de Compra: *</label>
+              <input type="date" id="compraFecha" data-label="Fecha de Compra">
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 5px;">
+            <label>Precio / Coste (€): *</label>
+            <input type="text" id="compraPrecio" placeholder="Ej: 35€" data-label="Precio de Compra">
+          </div>
+          <button type="submit" style="margin-top: 15px;">Guardar Compra</button>
+        </form>
+      </div>
+
+      <!-- NUEVO FORMULARIO: REGISTRAR CESIÓN -->
+      <div class="card">
+        <h2>🤝 Registrar Cesión / Venta</h2>
+        <form id="cesionForm" onsubmit="guardarCesion(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nº Anilla del Pájaro: *</label>
+              <input type="text" id="cesionAnilla" placeholder="Ej: ES-26-001" data-label="Nº Anilla de Cesión">
+            </div>
+            <div class="form-group">
+              <label>Adquiriente / Destino: *</label>
+              <input type="text" id="cesionDestino" placeholder="Nombre del comprador o aviario" data-label="Adquiriente / Destino">
+            </div>
+          </div>
+          <div class="form-row" style="margin-top: 5px;">
+            <div class="form-group">
+              <label>Fecha de Cesión: *</label>
+              <input type="date" id="cesionFecha" data-label="Fecha de Cesión">
+            </div>
+            <div class="form-group">
+              <label>Condiciones / Precio: *</label>
+              <input type="text" id="cesionCondiciones" placeholder="Ej: Cedido / 40€ / Cambio" data-label="Condiciones / Precio">
+            </div>
+          </div>
+          <button type="submit" style="margin-top: 15px;">Guardar Cesión</button>
         </form>
       </div>
 
@@ -290,12 +387,12 @@
         <h2>🏆 Registrar Premio o Concurso</h2>
         <form id="awardForm" onsubmit="guardarPremio(event)">
           <div class="form-group">
-            <label>Nº Anilla:</label>
-            <input type="text" id="awardAnilla" required placeholder="Anilla del ave premiada">
+            <label>Nº Anilla: *</label>
+            <input type="text" id="awardAnilla" placeholder="Anilla del ave premiada" data-label="Nº Anilla de Premio">
           </div>
           <div class="form-group">
-            <label>Descripción del Premio:</label>
-            <input type="text" id="premioDesc" required placeholder="Ej: 1º Premio - Concurso Local">
+            <label>Descripción del Premio: *</label>
+            <input type="text" id="premioDesc" placeholder="Ej: 1º Premio - Concurso Local" data-label="Descripción del Premio">
           </div>
           <button type="submit" style="margin-top: 5px;">Guardar Premio</button>
         </form>
@@ -324,15 +421,34 @@
 </div>
 
 <script>
-  // --- BASE DE DATOS EN ARCHIVOS JS / LOCALSTORAGE ---
-  let pajaros = JSON.parse(localStorage.getItem('aviario_pajaros_pro_v2')) || [];
-  let premios = JSON.parse(localStorage.getItem('aviario_premios_pro_v2')) || [];
+  let pajaros = JSON.parse(localStorage.getItem('aviario_pajaros_pro_v3')) || [];
+  let premios = JSON.parse(localStorage.getItem('aviario_premios_pro_v3')) || [];
+  let compras = JSON.parse(localStorage.getItem('aviario_compras_v3')) || [];
+  let cesiones = JSON.parse(localStorage.getItem('aviario_cesiones_v3')) || [];
   let currentUserRole = 'usuario';
 
   function sincronizarStorage() {
-    localStorage.setItem('aviario_pajaros_pro_v2', JSON.stringify(pajaros));
-    localStorage.setItem('aviario_premios_pro_v2', JSON.stringify(premios));
+    localStorage.setItem('aviario_pajaros_pro_v3', JSON.stringify(pajaros));
+    localStorage.setItem('aviario_premios_pro_v3', JSON.stringify(premios));
+    localStorage.setItem('aviario_compras_v3', JSON.stringify(compras));
+    localStorage.setItem('aviario_cesiones_v3', JSON.stringify(cesiones));
     actualizarVistas();
+  }
+
+  // --- MOTOR DE VALIDACIÓN INTELIGENTE ANTES DE GUARDAR ---
+  function validarCamposFormulario(formularioId) {
+    const form = document.getElementById(formularioId);
+    const inputs = form.querySelectorAll('input, select');
+    
+    for (let input of inputs) {
+      if (input.value.trim() === '') {
+        const nombreCampo = input.getAttribute('data-label') || 'campo obligatorio';
+        alert(`Falta por completar el campo: ${nombreCampo}`);
+        input.focus();
+        return false;
+      }
+    }
+    return true;
   }
 
   function cambiarRol() {
@@ -353,9 +469,10 @@
     }
   }
 
-  // Guardar o Actualizar Pájaro
   function guardarPajaro(e) {
     e.preventDefault();
+    if (!validarCamposFormulario('birdForm')) return;
+
     const anilla = document.getElementById('anilla').value.trim().toUpperCase();
     const ano = document.getElementById('ano').value.trim();
     const especie = document.getElementById('especie').value.trim();
@@ -371,20 +488,13 @@
       existente.sexo = sexo;
       existente.color = color;
       existente.criadorPajaro = criadorPajaro;
-      alert(`¡Pájaro ${anilla} actualizado y guardado correctamente en la base de datos local!`);
+      alert(`¡Pájaro ${anilla} actualizado y guardado correctamente!`);
     } else {
       pajaros.push({
-        anilla,
-        ano,
-        especie,
-        sexo,
-        color,
-        criadorPajaro,
-        padre: '',
-        madre: '',
-        creadorRol: currentUserRole
+        anilla, ano, especie, sexo, color, criadorPajaro,
+        padre: '', madre: '', creadorRol: currentUserRole
       });
-      alert(`¡Pájaro ${anilla} (${especie}) guardado con éxito en la base de datos local!`);
+      alert(`¡Pájaro ${anilla} (${especie}) guardado con éxito!`);
     }
 
     sincronizarStorage();
@@ -392,9 +502,10 @@
     document.getElementById('ano').value = '2026';
   }
 
-  // Ficha de Cría: Registra el cruce, asigna padres al hijo (creándolo si no existe) y actualiza linaje
   function registrarCria(e) {
     e.preventDefault();
+    if (!validarCamposFormulario('breedingForm')) return;
+
     const padreAnilla = document.getElementById('padreAnilla').value.trim().toUpperCase();
     const madreAnilla = document.getElementById('madreAnilla').value.trim().toUpperCase();
     const hijoAnilla = document.getElementById('hijoAnilla').value.trim().toUpperCase();
@@ -402,7 +513,6 @@
     const hijoColor = document.getElementById('hijoColor').value.trim();
     const hijoAno = document.getElementById('hijoAno').value.trim();
 
-    // Validar existencia de padres
     let padreObj = pajaros.find(p => p.anilla.toUpperCase() === padreAnilla);
     let madreObj = pajaros.find(p => p.anilla.toUpperCase() === madreAnilla);
 
@@ -416,14 +526,13 @@
       return;
     }
 
-    // Buscar o crear el hijo
     let hijoObj = pajaros.find(p => p.anilla.toUpperCase() === hijoAnilla);
     if (hijoObj) {
       hijoObj.padre = padreObj.anilla;
       hijoObj.madre = madreObj.anilla;
       hijoObj.sexo = hijoSexo;
       hijoObj.color = hijoColor;
-      hijoObj.especie = padreObj.especie; // Hereda especie por defecto
+      hijoObj.especie = padreObj.especie;
     } else {
       pajaros.push({
         anilla: hijoAnilla,
@@ -439,13 +548,55 @@
     }
 
     sincronizarStorage();
-    alert(`Cria registrada con éxito. Árbol genealógico actualizado automáticamente para el ejemplar ${hijoAnilla}.`);
+    alert(`Cría registrada con éxito. Árbol genealógico actualizado para el ejemplar ${hijoAnilla}.`);
     document.getElementById('breedingForm').reset();
     document.getElementById('hijoAno').value = '2026';
   }
 
+  function guardarCompra(e) {
+    e.preventDefault();
+    if (!validarCamposFormulario('compraForm')) return;
+
+    const anilla = document.getElementById('compraAnilla').value.trim().toUpperCase();
+    const especie = document.getElementById('compraEspecie').value.trim();
+    const vendedor = document.getElementById('compraVendedor').value.trim();
+    const fecha = document.getElementById('compraFecha').value;
+    const precio = document.getElementById('compraPrecio').value.trim();
+
+    compras.push({ anilla, especie, vendedor, fecha, precio });
+    
+    // Añadir automáticamente al listado general de pájaros si no existe
+    let existente = pajaros.find(p => p.anilla.toUpperCase() === anilla);
+    if (!existente) {
+      pajaros.push({
+        anilla, ano: new Date(fecha).getFullYear() || 2026, especie, sexo: 'N/D', color: 'Desconocido', criadorPajaro: vendedor, padre: '', madre: '', creadorRol: currentUserRole
+      });
+    }
+
+    sincronizarStorage();
+    alert('Compra registrada correctamente y añadida al inventario.');
+    document.getElementById('compraForm').reset();
+  }
+
+  function guardarCesion(e) {
+    e.preventDefault();
+    if (!validarCamposFormulario('cesionForm')) return;
+
+    const anilla = document.getElementById('cesionAnilla').value.trim().toUpperCase();
+    const destino = document.getElementById('cesionDestino').value.trim();
+    const fecha = document.getElementById('cesionFecha').value;
+    const condiciones = document.getElementById('cesionCondiciones').value.trim();
+
+    cesiones.push({ anilla, destino, fecha, condiciones });
+    sincronizarStorage();
+    alert('Cesión / Venta registrada correctamente.');
+    document.getElementById('cesionForm').reset();
+  }
+
   function guardarPremio(e) {
     e.preventDefault();
+    if (!validarCamposFormulario('awardForm')) return;
+
     const anilla = document.getElementById('awardAnilla').value.trim().toUpperCase();
     const texto = document.getElementById('premioDesc').value.trim();
 
@@ -456,26 +607,14 @@
     if (document.getElementById('searchAnilla').value) buscarAnillaAutomatica();
   }
 
-  // --- MOTOR GENÉTICO Y ÁRBOL GENEALÓGICO HASTA 5.ª GENERACIÓN ---
   function obtenerArbolCompleto(anillaTarget) {
-    let arbol = {
-      p: anillaTarget,
-      padre: null, madre: null,
-      abueloP: null, abuelaP: null, abueloM: null, abuelaM: null,
-      bisabuelosP: [null, null, null, null],
-      bisabuelosM: [null, null, null, null],
-      tatarabuelosP: [null, null, null, null, null, null, null, null],
-      tatarabuelosM: [null, null, null, null, null, null, null, null]
-    };
-
+    let arbol = { p: anillaTarget, padre: null, madre: null, abueloP: null, abuelaP: null, abueloM: null, abuelaM: null };
     let pActual = pajaros.find(p => p.anilla.toUpperCase() === anillaTarget.toUpperCase());
     if (!pActual) return arbol;
 
-    // Gen 1: Padres
     if (pActual.padre) arbol.padre = pajaros.find(p => p.anilla.toUpperCase() === pActual.padre.toUpperCase()) || { anilla: pActual.padre };
     if (pActual.madre) arbol.madre = pajaros.find(p => p.anilla.toUpperCase() === pActual.madre.toUpperCase()) || { anilla: pActual.madre };
 
-    // Gen 2: Abuelos
     if (arbol.padre) {
       if (arbol.padre.padre) arbol.abueloP = pajaros.find(p => p.anilla.toUpperCase() === arbol.padre.padre.toUpperCase()) || { anilla: arbol.padre.padre };
       if (arbol.padre.madre) arbol.abuelaP = pajaros.find(p => p.anilla.toUpperCase() === arbol.padre.madre.toUpperCase()) || { anilla: arbol.padre.madre };
@@ -484,14 +623,6 @@
       if (arbol.madre.padre) arbol.abueloM = pajaros.find(p => p.anilla.toUpperCase() === arbol.madre.padre.toUpperCase()) || { anilla: arbol.madre.padre };
       if (arbol.madre.madre) arbol.abuelaM = pajaros.find(p => p.anilla.toUpperCase() === arbol.madre.madre.toUpperCase()) || { anilla: arbol.madre.madre };
     }
-
-    // Gen 3: Bisabuelos
-    let abuelosList = [arbol.abueloP, arbol.abuelaP, arbol.abueloM, arbol.abuelaM];
-    abuelosList.forEach((ab, idx) => {
-      if (ab && ab.padre) arbol.bisabuelosP[idx*2] = pajaros.find(p => p.anilla.toUpperCase() === ab.padre.toUpperCase()) || { anilla: ab.padre };
-      if (ab && ab.madre) arbol.bisabuelosP[idx*2+1] = pajaros.find(p => p.anilla.toUpperCase() === ab.madre.toUpperCase()) || { anilla: ab.madre };
-    });
-
     return arbol;
   }
 
@@ -508,9 +639,8 @@
 
     resDiv.style.display = 'block';
     document.getElementById('targetBirdTitle').innerText = `Ejemplar: ${target.anilla}`;
-    document.getElementById('targetBirdDetails').innerHTML = `Especie: <strong>${target.especie || 'No esp.'}</strong> | Sexo: <strong>${target.sexo || 'N/D'}</strong> | Año: <strong>${target.ano}</strong> | Mutación: <strong>${target.color}</strong> | Criador: <strong>${target.criadorPajaro || 'Desconocido'}</strong>`;
+    document.getElementById('targetBirdDetails').innerHTML = `Especie: <strong>${target.especie || 'No esp.'}</strong> | Sexo: <strong>${target.sexo || 'N/D'}</strong> | Año: <strong>${target.ano}</strong> | Mutación: <strong>${target.color}</strong> | Criador: <strong>${target.criadorPajaro}</strong>`;
 
-    // Simulador de Cruces y Alertas Genéticas JS
     const simContainer = document.getElementById('simuladorCruces');
     const alertContainer = document.getElementById('alertasGenetica');
     const sexoOpuesto = target.sexo === 'Macho' ? 'Hembra' : 'Macho';
@@ -521,7 +651,6 @@
       p.sexo === sexoOpuesto
     );
 
-    // Detección de Consanguinidad / Alertas
     let arbol = obtenerArbolCompleto(target.anilla);
     let parientesCercanos = [];
     if (arbol.padre) parientesCercanos.push(arbol.padre.anilla);
@@ -543,21 +672,17 @@
       alertContainer.innerHTML = '';
     }
 
-    // Premios
     let listaPremios = premios.filter(pr => pr.anilla.toUpperCase() === target.anilla.toUpperCase());
     renderTagsPremios('relPremios', listaPremios);
 
-    // Árbol Genealógico Completo hasta 5.ª Gen
     let arbolHtml = `
       <p><strong>Padre:</strong> ${arbol.padre ? `<span class="bird-tag" onclick="consultar('${arbol.padre.anilla}')">${arbol.padre.anilla}</span>` : 'No registrado'}</p>
       <p><strong>Madre:</strong> ${arbol.madre ? `<span class="bird-tag" onclick="consultar('${arbol.madre.anilla}')">${arbol.madre.anilla}</span>` : 'No registrado'}</p>
       <p><strong>Abuelos Paternos:</strong> ${arbol.abueloP ? arbol.abueloP.anilla : '?'} / ${arbol.abuelaP ? arbol.abuelaP.anilla : '?'}</p>
       <p><strong>Abuelos Maternos:</strong> ${arbol.abueloM ? arbol.abueloM.anilla : '?'} / ${arbol.abuelaM ? arbol.abuelaM.anilla : '?'}</p>
-      <p style="color:#666; font-size:0.8rem; margin-top:5px;">🧬 Trazabilidad calculada automáticamente hasta 5.ª Generación (Bisabuelos y Tatarabuelos indexados en el motor JS).</p>
     `;
     document.getElementById('arbolGenealogicoCompleto').innerHTML = arbolHtml;
 
-    // Hermanos e Hijos
     let hermanos = pajaros.filter(p => p.anilla !== target.anilla && ((p.padre && p.padre === target.padre) || (p.madre && p.madre === target.madre)));
     renderTagsPuras('relHermanosTios', hermanos.map(h => h.anilla));
 
@@ -607,6 +732,16 @@
       });
     }
 
+    // Tabla de Compras
+    const comprasTbody = document.querySelector('#comprasTable tbody');
+    comprasTbody.innerHTML = compras.length === 0 ? `<tr><td colspan="5" style="text-align:center; color:#777;">Sin compras registradas.</td></tr>` : 
+      compras.map(c => `<tr><td><strong>${c.anilla}</strong></td><td>${c.especie}</td><td>${c.vendedor}</td><td>${c.fecha}</td><td>${c.precio}</td></tr>`).join('');
+
+    // Tabla de Cesiones
+    const cesionesTbody = document.querySelector('#cesionesTable tbody');
+    cesionesTbody.innerHTML = cesiones.length === 0 ? `<tr><td colspan="4" style="text-align:center; color:#777;">Sin cesiones registradas.</td></tr>` : 
+      cesiones.map(cs => `<tr><td><strong>${cs.anilla}</strong></td><td>${cs.destino}</td><td>${cs.fecha}</td><td>${cs.condiciones}</td></tr>`).join('');
+
     if (currentUserRole === 'admin') {
       const adminTbody = document.querySelector('#adminTable tbody');
       adminTbody.innerHTML = '';
@@ -631,7 +766,6 @@
     buscarAnillaAutomatica();
   }
 
-  // --- EXPORTAR BASE DE DATOS A .TXT ---
   function exportarBaseDatosTxt() {
     let contenidoTxt = "=== BASE DE DATOS AVIARIO DSE (ORNITGENEALOGÍA PRO) ===\n\n";
     contenidoTxt += "--- EJEMPLARES REGISTRADOS ---\n";
@@ -639,6 +773,16 @@
       contenidoTxt += `${idx + 1}. Anilla: ${p.anilla} | Especie: ${p.especie} | Sexo: ${p.sexo} | Mutación: ${p.color} | Año: ${p.ano} | Padre: ${p.padre || 'N/A'} | Madre: ${p.madre || 'N/A'} | Criador: ${p.criadorPajaro}\n`;
     });
     
+    contenidoTxt += "\n--- COMPRAS ---\n";
+    compras.forEach((c, idx) => {
+      contenidoTxt += `${idx + 1}. Anilla: ${c.anilla} | Especie: ${c.especie} | Vendedor: ${c.vendedor} | Fecha: ${c.fecha} | Precio: ${c.precio}\n`;
+    });
+
+    contenidoTxt += "\n--- CESIONES ---\n";
+    cesiones.forEach((cs, idx) => {
+      contenidoTxt += `${idx + 1}. Anilla: ${cs.anilla} | Destino: ${cs.destino} | Fecha: ${cs.fecha} | Condiciones: ${cs.condiciones}\n`;
+    });
+
     contenidoTxt += "\n--- PREMIOS Y PALMARÉS ---\n";
     premios.forEach((pr, idx) => {
       contenidoTxt += `${idx + 1}. Anilla: ${pr.anilla} | Premio: ${pr.texto}\n`;
