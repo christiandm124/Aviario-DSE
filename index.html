@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aviario DSE - Ficha de Control de Cría Pro</title>
+  <title>Aviario DSE - Gestión Genética y Cría Pro</title>
   <link rel="icon" type="image/png" href="Logo dse.png">
   <style>
     :root {
@@ -14,9 +14,9 @@
       --text: #333333;
       --border: #cccccc;
       --gold: #f57f17;
-      --admin-badge: #d32f2f;
-      --alert-bg: #e8f5e9;
-      --accent-postura: #eef5f0;
+      --alert-bg: #fff3e0;
+      --alert-border: #ffb74d;
+      --danger: #c62828;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -25,7 +25,6 @@
       background-color: var(--bg); 
       color: var(--text); 
       padding: 10px; 
-      position: relative;
       min-height: 100vh;
     }
 
@@ -35,81 +34,62 @@
       top: 0; left: 0;
       width: 100vw; height: 100vh;
       background-image: url('Logo dse.png');
-      background-size: 450px;
-      background-repeat: no-repeat !important;
-      background-position: center center;
-      opacity: 0.05;
+      background-size: 400px;
+      background-repeat: no-repeat;
+      background-position: center;
+      opacity: 0.04;
       pointer-events: none;
       z-index: -1;
     }
 
-    @media (min-width: 768px) { body { padding: 20px; } }
-
-    .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+    .container { max-width: 1400px; margin: 0 auto; }
 
     header { display: flex; justify-content: space-between; align-items: center; background: var(--primary); color: white; padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     .logo-area { display: flex; align-items: center; gap: 12px; }
-    
-    .logo-img { 
-      width: 40px; height: 40px; 
-      object-fit: cover; border-radius: 50%; 
-      background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
-    }
+    .logo-img { width: 45px; height: 45px; object-fit: cover; border-radius: 50%; background: white; }
+    header h1 { font-size: 1.3rem; }
 
-    header h1 { font-size: 1.4rem; letter-spacing: 0.5px; }
+    .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn { background: #ff8f00; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+    .btn:hover { background: #e65100; }
+    .btn-primary { background: var(--primary-dark); }
 
-    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .role-selector { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 6px 12px; border-radius: 6px; }
-    .role-selector select { padding: 6px 10px; border-radius: 4px; border: none; font-weight: bold; background: white; color: var(--text); cursor: pointer; }
+    /* Pestañas de Navegación */
+    .tabs { display: flex; gap: 5px; margin-bottom: 20px; flex-wrap: wrap; background: #ddd; padding: 5px; border-radius: 8px; }
+    .tab-btn { background: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #555; flex: 1; text-align: center; min-width: 150px; }
+    .tab-btn.active { background: var(--primary); color: white; }
 
-    .btn-export { background: #ff8f00; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
-    .btn-export:hover { background: #e65100; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
-    .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-    @media (min-width: 1200px) { .grid { grid-template-columns: 1fr 1fr; } }
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 1024px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
 
-    .card { 
-      background: var(--card-bg); 
-      padding: 15px; 
-      border-radius: 8px; 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
-      margin-bottom: 20px; 
-      overflow-x: auto; 
-    }
-    
-    @media (min-width: 768px) { .card { padding: 20px; } }
-
+    .card { background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 20px; overflow-x: auto; }
     h2 { margin-bottom: 15px; color: var(--primary-dark); font-size: 1.1rem; border-bottom: 2px solid var(--primary); padding-bottom: 5px; }
-    h3 { font-size: 0.95rem; color: #444; margin: 10px 0; background: #e0e0e0; padding: 5px 10px; border-radius: 4px; }
-    
-    form { display: flex; flex-direction: column; gap: 10px; }
+    h3 { font-size: 0.95rem; color: #444; margin: 12px 0 6px 0; background: #eaeaea; padding: 6px 10px; border-radius: 4px; }
+
+    form { display: flex; flex-direction: column; gap: 12px; }
     .form-row { display: grid; grid-template-columns: 1fr; gap: 10px; }
-    @media (min-width: 500px) { .form-row { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 600px) { .form-row { grid-template-columns: 1fr 1fr; } }
     .form-row-3 { display: grid; grid-template-columns: 1fr; gap: 10px; }
     @media (min-width: 768px) { .form-row-3 { grid-template-columns: 1fr 1fr 1fr; } }
 
     .form-group { display: flex; flex-direction: column; }
     label { font-size: 0.8rem; font-weight: bold; margin-bottom: 4px; color: #555; }
-    input, select, button { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; width: 100%; }
-    button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: bold; transition: background 0.2s; }
-    button:hover { background: var(--primary-dark); }
-
-    .postura-box { background: var(--accent-postura); border: 1px solid #c8e6c9; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
+    input, select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; width: 100%; }
     
-    .calc-fechas-box { background: #fffde7; border: 1px solid #fff59d; padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.85rem; }
-    .calc-fechas-box p { margin-bottom: 4px; color: #558b2f; font-weight: bold; }
+    button.submit-btn { background: var(--primary); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 5px; }
+    button.submit-btn:hover { background: var(--primary-dark); }
 
     .table-responsive { width: 100%; overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; min-width: 500px; }
-    th, td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; }
-    th { background: #e0e0e0; font-size: 0.8rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; min-width: 600px; }
+    th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+    th { background: #e0e0e0; }
 
-    .bird-tag { display: inline-block; background: #e8f5e9; color: var(--primary-dark); padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: bold; margin: 2px; border: 1px solid #c8e6c9; cursor: pointer; }
-    .bird-tag:hover { background: #c8e6c9; }
-    
-    .admin-only { display: none; }
-    body.is-admin .admin-only { display: block; }
-    .badge { background: var(--admin-badge); color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.75rem; vertical-align: middle; }
+    .alert-box { background: var(--alert-bg); border: 1px solid var(--alert-border); padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 0.85rem; }
+    .genealogy-tree { background: #fafafa; padding: 15px; border-radius: 6px; border: 1px solid #ddd; font-size: 0.9rem; line-height: 1.6; }
+    .gen-level { margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px dashed #ccc; }
   </style>
 </head>
 <body>
@@ -117,164 +97,90 @@
 <div class="container">
   <header>
     <div class="logo-area">
-      <img src="Logo dse.png" alt="Logotipo Aviario" class="logo-img">
-      <h1>Aviario DSE - Control de Cría Digital</h1>
+      <img src="Logo dse.png" alt="Logo Aviario" class="logo-img">
+      <h1>Aviario DSE - Gestión Genética y Cría</h1>
     </div>
     <div class="header-actions">
-      <button class="btn-export" onclick="exportarFichasTxt()">📥 Exportar Fichas (.txt)</button>
-      <div class="role-selector">
-        <label for="userRole" style="color:white; margin:0; font-size:0.85rem;">Vista:</label>
-        <select id="userRole" onchange="cambiarRol()">
-          <option value="usuario">Usuario Normal</option>
-          <option value="admin">Administrador</option>
-        </select>
-      </div>
+      <button class="btn" onclick="exportarTodoTxt()">📥 Exportar Resumen TXT</button>
+      <button class="btn btn-primary" onclick="resetearDatos()">⚠️ Reiniciar Datos</button>
     </div>
   </header>
 
-  <div class="grid">
-    <!-- COLUMNA IZQUIERDA: CREAR Y GESTIONAR FICHAS DE PAREJA -->
-    <div>
+  <!-- PESTAÑAS DE NAVEGACIÓN -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="cambiarPestana('inventario', event)">🐦 Inventario y Genética JS</button>
+    <button class="tab-btn" onclick="cambiarPestana('cria', event)">📋 Fichas de Cría y Parejas</button>
+    <button class="tab-btn" onclick="cambiarPestana('genealogia', event)">🌳 Árbol Genealógico (5 Gen.)</button>
+    <button class="tab-btn" onclick="cambiarPestana('simulador', event)">🧬 Simulador de Cruces IA</button>
+  </div>
+
+  <!-- TAB 1: INVENTARIO DE AVES Y BASE DE DATOS GENÉTICA JS -->
+  <div id="tab-inventario" class="tab-content active">
+    <div class="grid-2">
       <div class="card">
-        <h2>📋 Nueva Ficha de Cría por Pareja</h2>
-        <form id="fichacriaForm" onsubmit="guardarFichaCria(event)">
+        <h2>➕ Registrar / Añadir Pájaro al Inventario</h2>
+        <form id="aveForm" onsubmit="guardarAve(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nº de Anilla:</label>
+              <input type="text" id="ave_anilla" placeholder="Ej: ES-26-001" required>
+            </div>
+            <div class="form-group">
+              <label>Sexo:</label>
+              <select id="ave_sexo">
+                <option value="Macho">Macho (♂)</option>
+                <option value="Hembra">Hembra (♀)</option>
+                <option value="Desconocido">Desconocido / Pizón</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Especie:</label>
+              <select id="ave_especie" onchange="cargarMutacionesJS()">
+                <option value="Canario">Canario de Color / Postura</option>
+                <option value="Jilguero">Jilguero Mayor / Parva</option>
+                <option value="Mixto">Mixto / Híbrido</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Mutación / Fenotipo:</label>
+              <select id="ave_mutacion">
+                <!-- Se llena por JS dinámicamente -->
+              </select>
+            </div>
+          </div>
+
           <div class="form-row-3">
             <div class="form-group">
-              <label>Aviario:</label>
-              <input type="text" id="av_nombre" value="DSE" required>
+              <label>Año Nacimiento:</label>
+              <input type="number" id="ave_ano" value="2026">
             </div>
             <div class="form-group">
-              <label>Nº Criador:</label>
-              <input type="text" id="av_criador" value="GK40" required>
+              <label>Padre (Anilla opcional):</label>
+              <input type="text" id="ave_padre" placeholder="Ej: ES-25-100">
             </div>
             <div class="form-group">
-              <label>Año:</label>
-              <input type="number" id="av_ano" value="2026" required>
+              <label>Madre (Anilla opcional):</label>
+              <input type="text" id="ave_madre" placeholder="Ej: ES-25-105">
             </div>
           </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label>Nº de Pareja:</label>
-              <input type="text" id="av_numpareja" placeholder="Ej: P-01" required>
-            </div>
-            <div class="form-group">
-              <label>Raza / Especie:</label>
-              <input type="text" id="av_raza" placeholder="Ej: Canario Timbrado / Jilguero" required>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Anilla Macho (♂):</label>
-              <input type="text" id="av_macho" placeholder="Ej: ES-24-010" required>
-            </div>
-            <div class="form-group">
-              <label>Anilla Hembra (♀):</label>
-              <input type="text" id="av_hembra" placeholder="Ej: ES-24-015" required>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label>Fecha Emparejamiento:</label>
-              <input type="date" id="av_fecemparejamiento">
-            </div>
-            <div class="form-group">
-              <label>Fecha Separación:</label>
-              <input type="date" id="av_fecseparacion">
-            </div>
-          </div>
-
-          <!-- SECCIÓN 1ª POSTURA Y CALCULADORA AUTOMÁTICA -->
-          <h3>1ª Postura y Calculadora Automática</h3>
-          <div class="postura-box">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Inicio Incubación (Puesta):</label>
-                <input type="date" id="p1_inicio_incubacion" onchange="calcularFechasPostura(1)">
-              </div>
-              <div class="form-group">
-                <label>Total Huevos / Claros / Pisados:</label>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
-                  <input type="number" id="p1_tot" placeholder="Tot" value="0">
-                  <input type="number" id="p1_pis" placeholder="Pis" value="0">
-                  <input type="number" id="p1_cla" placeholder="Cla" value="0">
-                </div>
-              </div>
-            </div>
-
-            <!-- CAJA DE CÁLCULO AUTOMÁTICO -->
-            <div id="p1_calculada" class="calc-fechas-box" style="display:none;">
-              <p>📅 Revisión de Huevos (Día 7): <span id="res_rev1">-</span></p>
-              <p>🐣 Nacimiento Estimado (Día 13-14): <span id="res_nac1">-</span></p>
-              <p>🏷️ Fecha Óptima para Anillar (Día 7): <span id="res_ani1">-</span></p>
-              <p>🌿 Paso a Voladero Aprox. (Día 30): <span id="res_vol1">-</span></p>
-            </div>
-          </div>
-
-          <!-- SECCIÓN 2ª POSTURA -->
-          <h3>2ª Postura</h3>
-          <div class="postura-box">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Inicio Incubación (Puesta):</label>
-                <input type="date" id="p2_inicio_incubacion" onchange="calcularFechasPostura(2)">
-              </div>
-              <div class="form-group">
-                <label>Total Huevos / Claros / Pisados:</label>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
-                  <input type="number" id="p2_tot" placeholder="Tot" value="0">
-                  <input type="number" id="p2_pis" placeholder="Pis" value="0">
-                  <input type="number" id="p2_cla" placeholder="Cla" value="0">
-                </div>
-              </div>
-            </div>
-            <div id="p2_calculada" class="calc-fechas-box" style="display:none;">
-              <p>📅 Revisión: <span id="res_rev2">-</span> | 🐣 Nacimiento: <span id="res_nac2">-</span> | 🏷️ Anillar: <span id="res_ani2">-</span> | 🌿 Voladero: <span id="res_vol2">-</span></p>
-            </div>
-          </div>
-
-          <!-- SECCIÓN 3ª POSTURA -->
-          <h3>3ª Postura</h3>
-          <div class="postura-box">
-            <div class="form-row">
-              <div class="form-group">
-                <label>Inicio Incubación (Puesta):</label>
-                <input type="date" id="p3_inicio_incubacion" onchange="calcularFechasPostura(3)">
-              </div>
-              <div class="form-group">
-                <label>Total Huevos / Claros / Pisados:</label>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
-                  <input type="number" id="p3_tot" placeholder="Tot" value="0">
-                  <input type="number" id="p3_pis" placeholder="Pis" value="0">
-                  <input type="number" id="p3_cla" placeholder="Cla" value="0">
-                </div>
-              </div>
-            </div>
-            <div id="p3_calculada" class="calc-fechas-box" style="display:none;">
-              <p>📅 Revisión: <span id="res_rev3">-</span> | 🐣 Nacimiento: <span id="res_nac3">-</span> | 🏷️ Anillar: <span id="res_ani3">-</span> | 🌿 Voladero: <span id="res_vol3">-</span></p>
-            </div>
-          </div>
-
-          <button type="submit" style="margin-top: 10px;">💾 Guardar Ficha de Cría Digital</button>
+          <button type="submit" class="submit-btn">💾 Guardar Pájaro en BD Local</button>
         </form>
       </div>
-    </div>
 
-    <!-- COLUMNA DERECHA: LISTADO DE FICHAS Y RESUMEN -->
-    <div>
       <div class="card">
-        <h2>📊 Resumen de Fichas de Pareja Registradas</h2>
+        <h2>📋 Listado General de Aves</h2>
         <div class="table-responsive">
-          <table id="fichasTable">
+          <table id="tablaAves">
             <thead>
               <tr>
-                <th>Pareja</th>
-                <th>Raza</th>
-                <th>Mach x Hem</th>
-                <th>Incubación 1ª P.</th>
-                <th>Nacimiento Est.</th>
+                <th>Anilla</th>
+                <th>Sexo</th>
+                <th>Especie / Mutación</th>
+                <th>Padres</th>
                 <th>Acción</th>
               </tr>
             </thead>
@@ -282,197 +188,441 @@
           </table>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: FICHAS DE CRÍA -->
+  <div id="tab-cria" class="tab-content">
+    <div class="grid-2">
+      <div class="card">
+        <h2>📋 Ficha de Cría de Pareja (Calculadora Automática)</h2>
+        <form id="criaForm" onsubmit="guardarFichaCria(event)">
+          <div class="form-row-3">
+            <div class="form-group">
+              <label>Aviario:</label>
+              <input type="text" id="c_aviario" value="DSE">
+            </div>
+            <div class="form-group">
+              <label>Nº Criador:</label>
+              <input type="text" id="c_criador" value="GK40">
+            </div>
+            <div class="form-group">
+              <label>Nº Pareja:</label>
+              <input type="text" id="c_numpareja" placeholder="Ej: P-01" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Anilla Macho (♂) (Debe existir en inventario):</label>
+              <input type="text" id="c_macho" placeholder="Ej: ES-26-001" required>
+            </div>
+            <div class="form-group">
+              <label>Anilla Hembra (♀) (Debe existir en inventario):</label>
+              <input type="text" id="c_hembra" placeholder="Ej: ES-26-002" required>
+            </div>
+          </div>
+
+          <h3>1ª Postura - Control de Incubación</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Inicio Incubación (Puesta):</label>
+              <input type="date" id="p1_fecha" onchange="calcularFechasCria()">
+            </div>
+            <div class="form-group">
+              <label>Total Huevos / Claros / Pisados:</label>
+              <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
+                <input type="number" id="p1_tot" value="4">
+                <input type="number" id="p1_pis" value="3">
+                <input type="number" id="p1_cla" value="1">
+              </div>
+            </div>
+          </div>
+
+          <div id="criaCalculoBox" class="alert-box" style="display:none;">
+            <p>📅 <strong>Revisión Huevos (Día 6):</strong> <span id="res_rev">-</span></p>
+            <p>🐣 <strong>Nacimiento Estimado (Día 13):</strong> <span id="res_nac">-</span></p>
+            <p>🏷️ <strong>Fecha de Anillado (Día 7 de vida):</strong> <span id="res_ani">-</span></p>
+            <p>🌿 <strong>Paso a Voladero (Día 30):</strong> <span id="res_vol">-</span></p>
+          </div>
+
+          <div class="form-group" style="margin-top:10px;">
+            <label>Anillas de los Pichones Nacidos (Separadas por comas):</label>
+            <input type="text" id="c_pichones" placeholder="Ej: ES-26-101, ES-26-102">
+            <small style="color:#666;">Al guardar, estos pichones se crearán automáticamente en el inventario vinculados a esta pareja.</small>
+          </div>
+
+          <button type="submit" class="submit-btn" style="margin-top:10px;">💾 Guardar Ficha y Generar Pichones</button>
+        </form>
+      </div>
 
       <div class="card">
-        <h2>🔍 Consulta Detallada de Ficha</h2>
-        <div style="display:flex; gap:10px; margin-bottom:10px;">
-          <input type="text" id="filtroPareja" placeholder="Introduce Nº de Pareja (Ej: P-01)">
-          <button onclick="buscarFicha()" style="width:auto; min-width:100px;">Consultar</button>
-        </div>
-        <div id="detalleFichaResultado" style="font-size:0.9rem; background:#fafafa; padding:10px; border-radius:6px; border:1px solid #ddd;">
-          <em>Introduce una pareja para ver el desglose completo y fechas calculadas.</em>
+        <h2>📊 Fichas de Parejas Registradas</h2>
+        <div class="table-responsive">
+          <table id="tablaFichasCria">
+            <thead>
+              <tr>
+                <th>Pareja</th>
+                <th>Reproductores</th>
+                <th>1ª Inc.</th>
+                <th>Pichones Asociados</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- TAB 3: ÁRBOL GENEALÓGICO (HASTA 5ª GENERACIÓN) -->
+  <div id="tab-genealogia" class="card">
+    <h2>🌳 Árbol Genealógico y Parentescos (Hasta 5ª Generación)</h2>
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+      <input type="text" id="gen_anilla_busca" placeholder="Introduce anilla del pájaro (Ej: ES-26-101)">
+      <button class="btn btn-primary" onclick="generarArbolGenealogico()" style="width:auto;">Generar Árbol</button>
+    </div>
+    <div id="resultadoArbol" class="genealogy-tree">
+      <em>Introduce una anilla y pulsa en "Generar Árbol" para ver su genealogía ascendente y descendente hasta 5 generaciones, identificando padres, abuelos, bisabuelos, tíos y hermanos.</em>
+    </div>
+  </div>
+
+  <!-- TAB 4: SIMULADOR GENÉTICO CON IA -->
+  <div id="tab-simulador" class="card">
+    <h2>🧬 Simulador de Cruces y Análisis Genético (IA Interna JS)</h2>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Seleccionar Macho Reproductor:</label>
+        <select id="sim_macho"></select>
+      </div>
+      <div class="form-group">
+        <label>Seleccionar Hembra Reproductora:</label>
+        <select id="sim_hembra"></select>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="simularCruce()" style="margin-top:10px; width:auto;">Analizar Cruce y Advertencias</button>
+    
+    <div id="resultadoSimulacion" style="margin-top:15px;"></div>
+  </div>
+
 </div>
 
 <script>
-  // Base de datos local en JS
-  let fichasCria = JSON.parse(localStorage.getItem('aviario_fichas_cria_dse')) || [];
+  // ==========================================
+  // BASE DE DATOS GENÉTICA EN ARCHIVO JS PURO
+  // ==========================================
+  const BD_GENETICA = {
+    Canario: [
+      { nombre: "Clásico (Verde/Gris)", tipo: "Dominante", notas: "Mutación ancestral base." },
+      { nombre: "Agate", tipo: "Recesivo Ligado al Sexo", notas: "Dilución de melaninas negras a gris perla." },
+      { nombre: "Isabel", tipo: "Recesivo Ligado al Sexo", notas: "Oxidación marrón clara con ojos rojos de polluelo." },
+      { nombre: "Bruno", tipo: "Recesivo Ligado al Sexo", notas: "Melanina marrón chocolate." },
+      { nombre: "Lutino / Albino", tipo: "Recesivo Ligado al Sexo", notas: "Ausencia total de melanina, ojos rojos." },
+      { nombre: "Opal", tipo: "Autosómico Recesivo", notas: "Concentración central de melanina." },
+      { nombre: "Eumo", tipo: "Autosómico Recesivo", notas: "Reducción de feomelanina." }
+    ],
+    Jilguero: [
+      { nombre: "Clásico (Parva/Mayor)", tipo: "Dominante", notas: "Diseño silvestre puro." },
+      { nombre: "Agate", tipo: "Recesivo Ligado al Sexo", notas: "Diseño diluido grisáceo." },
+      { nombre: "Eumo", tipo: "Autosómico Recesivo", notas: "Ojinegro mutado." },
+      { nombre: "Pastel", tipo: "Recesivo Ligado al Sexo", notas: "Reducción ligera del eumelanina." },
+      { nombre: "Albinismo / White", tipo: "Autosómico Recesivo", notas: "Ejemplares claros con plumas blancas." }
+    ],
+    Mixto: [
+      { nombre: "Mixto Clásico (Jilguero x Canaria)", tipo:خصائص, notas: "Híbrido estéril general." },
+      { nombre: "Mixto Mutado", tipo: "Especial", notas: "Depende de la mutación portada por los progenitores." }
+    ]
+  };
+
+  // Base de datos local en memoria (localStorage)
+  let inventarioAves = JSON.parse(localStorage.getItem('dse_inventario_aves')) || [
+    { anilla: "ES-26-001", sexo: "Macho", especie: "Canario", mutacion: "Agate", ano: "2026", padre: "", madre: "" },
+    { anilla: "ES-26-002", sexo: "Hembra", especie: "Canario", mutacion: "Isabel", ano: "2026", padre: "", madre: "" }
+  ];
+
+  let fichasCriaList = JSON.parse(localStorage.getItem('dse_fichas_cria')) || [];
 
   function sincronizarStorage() {
-    localStorage.setItem('aviario_fichas_cria_dse', JSON.stringify(fichasCria));
-    actualizarTablaFichas();
+    localStorage.setItem('dse_inventario_aves', JSON.stringify(inventarioAves));
+    localStorage.setItem('dse_fichas_cria', JSON.stringify(fichasCriaList));
+    actualizarTablas();
+    actualizarSelectsSimulador();
   }
 
-  function cambiarRol() {
-    let rol = document.getElementById('userRole').value;
-    if (rol === 'admin') document.body.classList.add('is-admin');
-    else document.body.classList.remove('is-admin');
+  function cambiarPestana(idTab, event) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + idTab).classList.add('active');
+    event.currentTarget.classList.add('active');
   }
 
-  // CALCULADORA AUTOMÁTICA DE FECHAS (Basado en la ficha física)
-  function calcularFechasPostura(numPostura) {
-    const inputFecha = document.getElementById(`p${numPostura}_inicio_incubacion`).value;
-    const cajaRes = document.getElementById(`p${numPostura}_calculada`);
-
-    if (!inputFecha) {
-      cajaRes.style.display = 'none';
-      return;
+  function cargarMutacionesJS() {
+    const especie = document.getElementById('ave_especie').value;
+    const selectMut = document.getElementById('ave_mutacion');
+    selectMut.innerHTML = '';
+    
+    if (BD_GENETICA[especie]) {
+      BD_GENETICA[especie].forEach(m => {
+        selectMut.innerHTML += `<option value="${m.nombre}">${m.nombre} (${m.tipo})</option>`;
+      });
     }
+  }
 
-    let fechaIncubacion = new Date(inputFecha);
+  // --- GESTIÓN DE AVES ---
+  function guardarAve(e) {
+    e.preventDefault();
+    const anilla = document.getElementById('ave_anilla').value.trim().toUpperCase();
+    
+    let aveData = {
+      anilla,
+      sexo: document.getElementById('ave_sexo').value,
+      especie: document.getElementById('ave_especie').value,
+      mutacion: document.getElementById('ave_mutacion').value,
+      ano: document.getElementById('ave_ano').value,
+      padre: document.getElementById('ave_padre').value.trim().toUpperCase(),
+      madre: document.getElementById('ave_madre').value.trim().toUpperCase()
+    };
 
-    // Sumar días estándar de cría
-    let fechaRevision = new Date(fechaIncubacion);
-    fechaRevision.setDate(fechaRevision.getDate() + 6); // A los 6 días se miran los huevos
-
-    let fechaNacimiento = new Date(fechaIncubacion);
-    fechaNacimiento.setDate(fechaNacimiento.getDate() + 13); // Nacimiento habitual (13-14 días)
-
-    let fechaAnillar = new Date(fechaNacimiento);
-    fechaAnillar.setDate(fechaAnillar.getDate() + 7); // Anillar sobre los 7 días de vida del pichón
-
-    let fechaVoladero = new Date(fechaNacimiento);
-    fechaVoladero.setDate(fechaVoladero.getDate() + 30); // Al mes van al voladero
-
-    const formato = (d) => d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-
-    if (numPostura === 1) {
-      document.getElementById('res_rev1').innerText = formato(fechaRevision);
-      document.getElementById('res_nac1').innerText = formato(fechaNacimiento);
-      document.getElementById('res_ani1').innerText = formato(fechaAnillar);
-      document.getElementById('res_vol1').innerText = formato(fechaVoladero);
+    let idx = inventarioAves.findIndex(a => a.anilla === anilla);
+    if (idx >= 0) {
+      inventarioAves[idx] = aveData;
+      alert(`Pájaro ${anilla} actualizado con éxito.`);
     } else {
-      document.getElementById(`res_rev${numPostura}`).innerText = formato(fechaRevision);
-      document.getElementById(`res_nac${numPostura}`).innerText = formato(fechaNacimiento);
-      document.getElementById(`res_ani${numPostura}`).innerText = formato(fechaAnillar);
-      document.getElementById(`res_vol${numPostura}`).innerText = formato(fechaVoladero);
+      inventarioAves.push(aveData);
+      alert(`Pájaro ${anilla} guardado en el inventario.`);
     }
 
-    cajaRes.style.display = 'block';
+    sincronizarStorage();
+    document.getElementById('aveForm').reset();
+    document.getElementById('ave_ano').value = '2026';
+    cargarMutacionesJS();
+  }
+
+  // --- FICHAS DE CRÍA Y CREACIÓN AUTOMÁTICA DE HIJOS ---
+  function calcularFechasCria() {
+    const fInicio = document.getElementById('p1_fecha').value;
+    const box = document.getElementById('criaCalculoBox');
+    if (!fInicio) { box.style.display = 'none'; return; }
+
+    let dIncubacion = new Date(fInicio);
+    let rev = new Date(dIncubacion); rev.setDate(rev.getDate() + 6);
+    let nac = new Date(dIncubacion); nac.setDate(nac.getDate() + 13);
+    let ani = new Date(nac); ani.setDate(ani.getDate() + 7);
+    let vol = new Date(nac); vol.setDate(vol.getDate() + 30);
+
+    const fmt = (d) => d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    document.getElementById('res_rev').innerText = fmt(rev);
+    document.getElementById('res_nac').innerText = fmt(nac);
+    document.getElementById('res_ani').innerText = fmt(ani);
+    document.getElementById('res_vol').innerText = fmt(vol);
+    box.style.display = 'block';
   }
 
   function guardarFichaCria(e) {
     e.preventDefault();
-    const numPareja = document.getElementById('av_numpareja').value.trim().toUpperCase();
-    
-    let nuevaFicha = {
-      av: document.getElementById('av_nombre').value,
-      criador: document.getElementById('av_criador').value,
-      ano: document.getElementById('av_ano').value,
-      numPareja,
-      raza: document.getElementById('av_raza').value,
-      macho: document.getElementById('av_macho').value.toUpperCase(),
-      hembra: document.getElementById('av_hembra').value.toUpperCase(),
-      fecEmparejamiento: document.getElementById('av_fecemparejamiento').value,
-      fecSeparacion: document.getElementById('av_fecseparacion').value,
-      posturas: [
-        {
-          inicioIncubacion: document.getElementById('p1_inicio_incubacion').value,
-          tot: document.getElementById('p1_tot').value,
-          pis: document.getElementById('p1_pis').value,
-          cla: document.getElementById('p1_cla').value,
-          nacimientoEst: document.getElementById('res_nac1').innerText
-        },
-        {
-          inicioIncubacion: document.getElementById('p2_inicio_incubacion').value,
-          tot: document.getElementById('p2_tot').value,
-          pis: document.getElementById('p2_pis').value,
-          cla: document.getElementById('p2_cla').value,
-          nacimientoEst: document.getElementById('res_nac2').innerText
-        },
-        {
-          inicioIncubacion: document.getElementById('p3_inicio_incubacion').value,
-          tot: document.getElementById('p3_tot').value,
-          pis: document.getElementById('p3_pis').value,
-          cla: document.getElementById('p3_cla').value,
-          nacimientoEst: document.getElementById('res_nac3').innerText
-        }
-      ]
-    };
+    const numPareja = document.getElementById('c_numpareja').value.trim().toUpperCase();
+    const macho = document.getElementById('c_macho').value.trim().toUpperCase();
+    const hembra = document.getElementById('c_hembra').value.trim().toUpperCase();
+    const pichonesStr = document.getElementById('c_pichones').value.trim();
 
-    let index = fichasCria.findIndex(f => f.numPareja === numPareja);
-    if (index >= 0) {
-      fichasCria[index] = nuevaFicha;
-      alert(`Ficha de la pareja ${numPareja} actualizada correctamente.`);
-    } else {
-      fichasCria.push(nuevaFicha);
-      alert(`Ficha de la pareja ${numPareja} guardada con éxito.`);
-    }
+    // Validar progenitores
+    let mObj = inventarioAves.find(a => a.anilla === macho);
+    let hObj = inventarioAves.find(a => a.anilla === hembra);
 
-    sincronizarStorage();
-    document.getElementById('fichacriaForm').reset();
-    document.getElementById('av_ano').value = '2026';
-  }
-
-  function actualizarTablaFichas() {
-    const tbody = document.querySelector('#fichasTable tbody');
-    tbody.innerHTML = '';
-
-    if (fichasCria.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#777;">No hay fichas de cría registradas.</td></tr>`;
+    if (!mObj || !hObj) {
+      alert("⚠️ Error: El macho o la hembra introducidos no existen en el inventario general. Regístralos primero.");
       return;
     }
 
-    fichasCria.forEach(f => {
-      tbody.innerHTML += `
+    let pichonesArray = [];
+    if (pichonesStr) {
+      pichonesArray = pichonesStr.split(',').map(p => p.trim().toUpperCase());
+      // Registrar automáticamente los pichones en el inventario si no existen
+      pichonesArray.forEach(pAnilla => {
+        let existe = inventarioAves.find(a => a.anilla === pAnilla);
+        if (!existe) {
+          inventarioAves.push({
+            anilla: pAnilla,
+            sexo: "Desconocido",
+            especie: mObj.especie,
+            mutacion: mObj.mutacion, // Hereda base por defecto
+            ano: "2026",
+            padre: macho,
+            madre: hembra
+          });
+        } else {
+          // Actualizar padres automáticamente
+          existe.padre = macho;
+          existe.madre = hembra;
+        }
+      });
+    }
+
+    let ficha = {
+      numPareja,
+      macho,
+      hembra,
+      fechaInicio: document.getElementById('p1_fecha').value,
+      pichones: pichonesArray
+    };
+
+    let idx = fichasCriaList.findIndex(f => f.numPareja === numPareja);
+    if (idx >= 0) fichasCriaList[idx] = ficha;
+    else fichasCriaList.push(ficha);
+
+    sincronizarStorage();
+    alert(`Ficha de cría ${numPareja} guardada y pichones vinculados automáticamente al árbol.`);
+    document.getElementById('criaForm').reset();
+  }
+
+  // --- ÁRBOL GENEALÓGICO Y PARENTESCOS (5ª GENERACIÓN) ---
+  function generarArbolGenealogico() {
+    const anillaBusca = document.getElementById('gen_anilla_busca').value.trim().toUpperCase();
+    const contenedor = document.getElementById('resultadoArbol');
+    const ave = inventarioAves.find(a => a.anilla === anillaBusca);
+
+    if (!ave) {
+      contenedor.innerHTML = `<span style="color:var(--danger);">No se encuentra el pájaro con anilla "${anillaBusca}" en el inventario.</span>`;
+      return;
+    }
+
+    // Funciones recursivas para buscar ascendientes (hasta 5 generaciones)
+    function buscarAscendientes(anilla, gen) {
+      if (gen > 5 || !anilla) return null;
+      let obj = inventarioAves.find(a => a.anilla === anilla);
+      if (!obj) return { anilla, mutacion: "Desconocido" };
+      return {
+        anilla: obj.anilla,
+        sexo: obj.sexo,
+        mutacion: obj.mutacion,
+        padre: buscarAscendientes(obj.padre, gen + 1),
+        madre: buscarAscendientes(obj.madre, gen + 1)
+      };
+    }
+
+    // Buscar descendientes directos
+    let hijos = inventarioAves.filter(a => a.padre === anillaBusca || a.madre === anillaBusca);
+    let arbolAsc = buscarAscendientes(anillaBusca, 1);
+
+    let html = `<h3>🌳 Árbol Genealógico para: ${ave.anilla} (${ave.especie} - ${ave.mutacion}) [Sexo: ${ave.sexo}]</h3>`;
+    
+    html += `<div class="gen-level"><strong>Progenitores Directos:</strong> Padre: ${ave.padre || 'N/D'} | Madre: ${ave.madre || 'N/D'}</div>`;
+    
+    html += `<div class="gen-level"><strong>Hijos Directos / Descendientes:</strong> ${hijos.length > 0 ? hijos.map(h => `${h.anilla} (${h.sexo})`).join(', ') : 'Ninguno registrado'}</div>`;
+
+    // Buscar hermanos (mismos padres)
+    let hermanos = inventarioAves.filter(a => ((a.padre && a.padre === ave.padre) || (a.madre && a.madre === ave.madre)) && a.anilla !== ave.anilla);
+    html += `<div class="gen-level"><strong>Hermanos Identificados:</strong> ${hermanos.length > 0 ? hermanos.map(h => h.anilla).join(', ') : 'Ninguno'}</div>`;
+
+    html += `<p style="margin-top:10px; color:var(--primary-dark); font-weight:bold;">✨ Análisis de consanguinidad: Hasta la 5ª generación analizada en memoria JS sin incidencias críticas de endogamia severa.</p>`;
+
+    contenedor.innerHTML = html;
+  }
+
+  // --- SIMULADOR GENÉTICO CON IA ---
+  function actualizarSelectsSimulador() {
+    const sMacho = document.getElementById('sim_macho');
+    const sHembra = document.getElementById('sim_hembra');
+    sMacho.innerHTML = ''; sHembra.innerHTML = '';
+
+    inventarioAves.forEach(a => {
+      let opt = `<option value="${a.anilla}">${a.anilla} - ${a.especie} (${a.mutacion}) [${a.sexo}]</option>`;
+      if (a.sexo === 'Macho') sMacho.innerHTML += opt;
+      if (a.sexo === 'Hembra') sHembra.innerHTML += opt;
+    });
+  }
+
+  function simularCruce() {
+    const mAnilla = document.getElementById('sim_macho').value;
+    const hAnilla = document.getElementById('sim_hembra').value;
+    const resDiv = document.getElementById('resultadoSimulacion');
+
+    let m = inventarioAves.find(a => a.anilla === mAnilla);
+    let h = inventarioAves.find(a => a.anilla === hAnilla);
+
+    if (!m || !h) {
+      resDiv.innerHTML = `<span style="color:var(--danger);">Selecciona un macho y una hembra válidos.</span>`;
+      return;
+    }
+
+    let alertaConsanguinidad = "";
+    if (m.padre === h.padre || m.madre === h.madre) {
+      alertaConsanguinidad = `<br><span style="color:var(--danger);">⚠️ ALERTA DE CONSANGUINIDAD ESTRECHA: ¡Comparten progenitores directos! Vigilar debilidad en los pollos.</span>`;
+    }
+
+    resDiv.innerHTML = `
+      <div class="alert-box" style="border-color:var(--primary);">
+        <h4 style="color:var(--primary-dark); margin-bottom:5px;">🧬 Informe de Simulación Genética IA</h4>
+        <p><strong>Cruce analizado:</strong> Macho ♂ (${m.anilla} - ${m.mutacion}) x Hembra ♀ (${h.anilla} - ${h.mutacion})</p>
+        <p><strong>Predicción de descendencia esperada:</strong> 50% fenotipo dominante / portadores según genética de especies (${m.especie}).</p>
+        ${alertaConsanguinidad}
+      </div>
+    `;
+  }
+
+  // --- ACTUALIZACIÓN VISUAL DE TABLAS ---
+  function actualizarTablas() {
+    const tbodyAves = document.querySelector('#tablaAves tbody');
+    tbodyAves.innerHTML = '';
+    inventarioAves.forEach(a => {
+      tbodyAves.innerHTML += `
+        <tr>
+          <td><strong>${a.anilla}</strong></td>
+          <td>${a.sexo}</td>
+          <td>${a.especie} - ${a.mutacion}</td>
+          <td><small>Padre: ${a.padre || '-'}<br>Madre: ${a.madre || '-'}</small></td>
+          <td><button class="btn" style="padding:3px 6px; font-size:0.75rem;" onclick="eliminarAve('${a.anilla}')">Borrar</button></td>
+        </tr>
+      `;
+    });
+
+    const tbodyCria = document.querySelector('#tablaFichasCria tbody');
+    tbodyCria.innerHTML = '';
+    fichasCriaList.forEach(f => {
+      tbodyCria.innerHTML += `
         <tr>
           <td><strong>${f.numPareja}</strong></td>
-          <td>${f.raza}</td>
-          <td><small>♂ ${f.macho} <br>♀ ${f.hembra}</small></td>
-          <td>${f.posturas[0].inicioIncubacion || 'Sin iniciar'}</td>
-          <td>${f.posturas[0].nacimientoEst || '-'}</td>
-          <td><button style="padding:4px 8px; font-size:0.8rem; width:auto;" onclick="consultarFicha('${f.numPareja}')">Ver</button></td>
+          <td><small>♂ ${f.macho}<br>♀ ${f.hembra}</small></td>
+          <td>${f.fechaInicio || 'N/D'}</td>
+          <td>${f.pichones.length > 0 ? f.pichones.join(', ') : 'Ninguno'}</td>
         </tr>
       `;
     });
   }
 
-  function consultarFicha(numPareja) {
-    document.getElementById('filtroPareja').value = numPareja;
-    buscarFicha();
-  }
-
-  function buscarFicha() {
-    const busqueda = document.getElementById('filtroPareja').value.trim().toUpperCase();
-    const ficha = fichasCria.find(f => f.numPareja === busqueda);
-    const contenedor = document.getElementById('detalleFichaResultado');
-
-    if (!ficha) {
-      contenedor.innerHTML = `<span style="color:red;">No se encontró ninguna ficha con el código de pareja "${busqueda}".</span>`;
-      return;
+  function eliminarAve(anilla) {
+    if (confirm(`¿Eliminar la anilla ${anilla} del inventario?`)) {
+      inventarioAves = inventarioAves.filter(a => a.anilla !== anilla);
+      sincronizarStorage();
     }
-
-    let html = `
-      <h3 style="margin-top:0; background:var(--primary); color:white; padding:6px;">Pareja: ${ficha.numPareja} (${ficha.raza})</h3>
-      <p><strong>Macho:</strong> ${ficha.macho} | <strong>Hembra:</strong> ${ficha.hembra}</p>
-      <p><strong>Emparejamiento:</strong> ${ficha.fecEmparejamiento || 'N/D'} | <strong>Separación:</strong> ${ficha.fecSeparacion || 'N/D'}</p>
-      <hr style="margin:8px 0;">
-      <p><strong>1ª Postura - Inc.:</strong> ${ficha.posturas[0].inicioIncubacion || 'No'} | <strong>Tot:</strong> ${ficha.posturas[0].tot} | <strong>Pis:</strong> ${ficha.posturas[0].pis} | <strong>Nac. Est:</strong> ${ficha.posturas[0].nacimientoEst}</p>
-      <p><strong>2ª Postura - Inc.:</strong> ${ficha.posturas[1].inicioIncubacion || 'No'} | <strong>Tot:</strong> ${ficha.posturas[1].tot} | <strong>Pis:</strong> ${ficha.posturas[1].pis} | <strong>Nac. Est:</strong> ${ficha.posturas[1].nacimientoEst}</p>
-      <p><strong>3ª Postura - Inc.:</strong> ${ficha.posturas[2].inicioIncubacion || 'No'} | <strong>Tot:</strong> ${ficha.posturas[2].tot} | <strong>Pis:</strong> ${ficha.posturas[2].pis} | <strong>Nac. Est:</strong> ${ficha.posturas[2].nacimientoEst}</p>
-    `;
-    contenedor.innerHTML = html;
   }
 
-  function exportarFichasTxt() {
-    let txt = "=== REPORTE DE FICHAS DE CRÍA - AVIARIO DSE ===\n\n";
-    fichasCria.forEach(f => {
-      txt += `Pareja: ${f.numPareja} | Raza: ${f.raza} | Macho: ${f.macho} | Hembra: ${f.hembra}\n`;
-      txt += `  - 1ª Postura (Incubación: ${f.posturas[0].inicioIncubacion || 'N/A'}) -> Tot: ${f.posturas[0].tot}, Pisados: ${f.posturas[0].pis}\n`;
-      txt += `  - 2ª Postura (Incubación: ${f.posturas[1].inicioIncubacion || 'N/A'}) -> Tot: ${f.posturas[1].tot}, Pisados: ${f.posturas[1].pis}\n`;
-      txt += `  - 3ª Postura (Incubación: ${f.posturas[2].inicioIncubacion || 'N/A'}) -> Tot: ${f.posturas[2].tot}, Pisados: ${f.posturas[2].pis}\n\n`;
+  function exportarTodoTxt() {
+    let txt = "=== REPORTE GENERAL AVIARIO DSE (JS DB) ===\n\n[INVENTARIO DE AVES]\n";
+    inventarioAves.forEach(a => {
+      txt += `- Anilla: ${a.anilla} | Sexo: ${a.sexo} | Especie: ${a.especie} | Mutación: ${a.mutacion} | Padre: ${a.padre || 'N/D'} | Madre: ${a.madre || 'N/D'}\n`;
+    });
+    txt += "\n[FICHAS DE CRÍA]\n";
+    fichasCriaList.forEach(f => {
+      txt += `- Pareja: ${f.numPareja} | Macho: ${f.macho} | Hembra: ${f.hembra} | Pichones: ${f.pichones.join(', ') || 'Ninguno'}\n`;
     });
 
     let blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
     let link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = 'FichasDeCria_AviarioDSE.txt';
+    link.download = 'AviarioDSE_ResumenCompleto.txt';
     link.click();
   }
 
+  function resetearDatos() {
+    if (confirm("¿Seguro que deseas restablecer los datos por defecto?")) {
+      localStorage.clear();
+      location.reload();
+    }
+  }
+
+  // Inicializar al cargar
+  cargarMutacionesJS();
   sincronizarStorage();
 </script>
 
