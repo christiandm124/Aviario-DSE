@@ -217,20 +217,8 @@
 
           <div class="form-row" style="margin-top: 5px;">
             <div class="form-group">
-              <label>Especie / Raza:</label>
-              <select id="especie" required>
-                <option value="" disabled selected>-- Selecciona especie --</option>
-                <option value="Canario">Canario</option>
-                <option value="Jilguero">Jilguero</option>
-                <option value="Verderón Común">Verderón Común</option>
-                <option value="Verderón Chino">Verderón Chino</option>
-                <option value="Verderón Escocés">Verderón Escocés</option>
-                <option value="Verderón Maltés">Verderón Maltés</option>
-                <option value="Verdecillo">Verdecillo</option>
-                <option value="Camachuelo">Camachuelo</option>
-                <option value="Picogordo">Picogordo</option>
-                <option value="Otra Especie">Otra Especie</option>
-              </select>
+              <label>Especie / Raza (Escrito a mano):</label>
+              <input type="text" id="especie" required placeholder="Ej: Canario / Jilguero Mayor / Parva">
             </div>
             <div class="form-group">
               <label>Sexo:</label>
@@ -244,7 +232,7 @@
 
           <div class="form-row" style="margin-top: 5px;">
             <div class="form-group">
-              <label>Mutación / Color:</label>
+              <label>Mutación / Fenotipo (Escrito a mano):</label>
               <input type="text" id="color" required placeholder="Ej: Clásico, Ágata, Bruno...">
             </div>
             <div class="form-group">
@@ -253,7 +241,7 @@
             </div>
           </div>
 
-          <button type="submit" style="margin-top: 15px;">Guardar / Actualizar en Base de Datos JS</button>
+          <button type="submit" style="margin-top: 15px;">💾 Guardar Pájaro en BD Local</button>
         </form>
       </div>
 
@@ -370,7 +358,7 @@
     e.preventDefault();
     const anilla = document.getElementById('anilla').value.trim().toUpperCase();
     const ano = document.getElementById('ano').value.trim();
-    const especie = document.getElementById('especie').value;
+    const especie = document.getElementById('especie').value.trim();
     const sexo = document.getElementById('sexo').value;
     const color = document.getElementById('color').value.trim();
     const criadorPajaro = document.getElementById('criadorPajaro').value.trim();
@@ -383,7 +371,7 @@
       existente.sexo = sexo;
       existente.color = color;
       existente.criadorPajaro = criadorPajaro;
-      alert(`Ejemplar ${anilla} actualizado correctamente en la base de datos JS.`);
+      alert(`¡Pájaro ${anilla} actualizado y guardado correctamente en la base de datos local!`);
     } else {
       pajaros.push({
         anilla,
@@ -396,7 +384,7 @@
         madre: '',
         creadorRol: currentUserRole
       });
-      alert(`Ejemplar ${anilla} (${especie}) registrado con éxito.`);
+      alert(`¡Pájaro ${anilla} (${especie}) guardado con éxito en la base de datos local!`);
     }
 
     sincronizarStorage();
@@ -504,7 +492,6 @@
       if (ab && ab.madre) arbol.bisabuelosP[idx*2+1] = pajaros.find(p => p.anilla.toUpperCase() === ab.madre.toUpperCase()) || { anilla: ab.madre };
     });
 
-    // Gen 4 y 5 (Bisabuelos a Tatarabuelos simulados por estructura de datos integrada)
     return arbol;
   }
 
@@ -530,7 +517,7 @@
     
     const posiblesParejas = pajaros.filter(p => 
       p.anilla !== target.anilla && 
-      p.especie === target.especie && 
+      p.especie.toLowerCase() === target.especie.toLowerCase() && 
       p.sexo === sexoOpuesto
     );
 
@@ -547,7 +534,7 @@
       simContainer.innerHTML = `<div class="pro-box">💡 <strong>Pareja Sugerida (${sugerida.sexo}):</strong> <span class="bird-tag" onclick="consultar('${sugerida.anilla}')">${sugerida.anilla}</span> (${sugerida.color}).</div>`;
       
       if (esConsanguineo) {
-        alertContainer.innerHTML = `<div class="alert-box">⚠️️ <strong>Alerta Genética:</strong> La pareja sugerida comparte vínculos directos de parentesco. Vigilar coeficiente de consanguinidad elevado.</div>`;
+        alertContainer.innerHTML = `<div class="alert-box">⚠ <strong>Alerta Genética:</strong> La pareja sugerida comparte vínculos directos de parentesco. Vigilar coeficiente de consanguinidad elevado.</div>`;
       } else {
         alertContainer.innerHTML = `<div class="pro-box" style="background:#e8f5e9; border-left-color:#2e7d32;">✅ <strong>Control Genético Óptimo:</strong> Sin consanguinidad directa detectada con la pareja sugerida. Cruce recomendado.</div>`;
       }
